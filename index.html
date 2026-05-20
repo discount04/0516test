@@ -2,142 +2,228 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>가방 요정 스티커북</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@900&display=swap" rel="stylesheet">
+    <!-- 구글 폰트: Dongle(메인용), IBM Plex Sans KR(고딕/본문용) -->
+    <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@300;400;700&family=IBM+Plex+Sans+KR:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Pretendard', sans-serif;
-            background-color: #fdfdfd;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 20px 20px;
+        /* 로컬 폰트 (백업용 유지) */
+        @font-face {
+            font-family: 'OkMallang';
+            src: url('./Ok Mallang B.otf') format('opentype');
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
         }
-        /* 공책 줄무늬 캔버스 */
+
+        :root {
+            /* 메인 폰트: Dongle (둥글고 귀여운 느낌) */
+            --main-font: 'Dongle', 'OkMallang', sans-serif;
+            /* 고딕 폰트: IBM Plex Sans KR (깔끔한 본문용) */
+            --gothic-font: 'IBM Plex Sans KR', sans-serif;
+        }
+
+        body {
+            font-family: var(--main-font);
+            background-color: #f8fafc;
+            background-image: radial-gradient(#e2e8f0 1.2px, transparent 1.2px);
+            background-size: 20px 20px;
+            color: #333;
+            overscroll-behavior: none;
+            touch-action: pan-x pan-y;
+            font-size: 1.4rem; /* Dongle 폰트는 작게 보일 수 있어 기본 크기를 키웠습니다 */
+        }
+
+        /* 고딕체(IBM Plex Sans KR)가 필요한 부분에 적용 */
+        .gothic-text, button, p, span:not(.emoji) {
+            font-family: var(--gothic-font);
+        }
+
+        /* 제목이나 강조된 부분은 다시 Dongle 적용 */
+        .dongle-title, h1, h3, #status-label, #res-label {
+            font-family: var(--main-font);
+            line-height: 0.9;
+        }
+
         .notebook-canvas {
             background-image: 
                 linear-gradient(#f1f5f9 1px, transparent 1px),
                 linear-gradient(90deg, #f1f5f9 1px, transparent 1px);
-            background-size: 40px 40px;
+            background-size: 25px 25px;
         }
-        /* 스티커 다이컷 테두리 효과 */
-        .sticker-cut {
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+        .diary-title {
+            font-size: 3.5rem; /* Dongle 폰트에 맞게 크기 조정 */
+            letter-spacing: -0.02em;
         }
-        .sticker-cut:hover {
-            transform: scale(1.1) rotate(5deg);
-            z-index: 50;
-        }
-        /* 누끼 느낌을 위한 흰색 외곽선 */
+
         .die-cut-border {
-            padding: 8px;
+            padding: 10px;
             background: white;
             border-radius: 20px;
-            border: 5px solid white;
-            box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+            border: 4px solid white;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+            display: inline-block;
+            pointer-events: none;
         }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 20px; }
+
+        .sticker-label {
+            margin-top: 6px;
+            background: #475569;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: var(--gothic-font);
+            transform: rotate(-1deg);
+            white-space: nowrap;
+            pointer-events: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #sticker-drawer {
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+            z-index: 100;
+        }
+
+        .drawer-open { transform: translateY(0) !important; }
+        .drawer-closed { transform: translateY(calc(100% - 65px)) !important; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+        .animate-float { animation: floating 4s infinite ease-in-out; }
+
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         
-        @keyframes bounce-subtle {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .page-transition {
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
-        .animate-bounce-subtle { animation: bounce-subtle 2s infinite ease-in-out; }
     </style>
 </head>
-<body class="min-h-screen overflow-hidden">
+<body class="h-screen flex flex-col overflow-hidden">
 
-    <!-- 메인 레이아웃 -->
-    <div id="app" class="flex flex-col md:flex-row h-screen">
-        
-        <!-- 왼쪽: 캔버스 (가방 꾸미기 영역) -->
-        <div class="flex-1 p-6 md:p-10 flex flex-col gap-4 relative">
-            <div class="flex justify-between items-center z-10">
-                <div class="bg-black text-white px-6 py-2 rounded-full font-black text-sm italic shadow-lg">PAGE. 01</div>
-                <h1 class="text-3xl font-black italic tracking-tighter">BAG FAIRY <span class="text-blue-500 underline">DIARY</span></h1>
-            </div>
-
-            <!-- 드롭 구역 -->
-            <div id="drop-zone" class="flex-1 notebook-canvas relative rounded-[50px] bg-white border-4 border-gray-100 shadow-2xl overflow-hidden" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
-                <div id="empty-msg" class="absolute inset-0 flex flex-col items-center justify-center opacity-10 pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-4 animate-bounce-subtle"><path d="m15 18-6-6 6-6"/></svg>
-                    <p class="text-4xl font-black italic">DRAG STICKERS HERE</p>
-                </div>
-
-                <!-- 가방 위치 가이드 (장식) -->
-                <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
-                    <div class="w-[70%] aspect-square border-[40px] border-black rounded-[100px]"></div>
-                </div>
-
-                <!-- 실시간 무게 요약 바 -->
-                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-xl z-40">
-                    <div class="bg-white/90 backdrop-blur-xl border-4 border-white p-5 rounded-[30px] shadow-2xl flex items-center justify-between">
-                        <div class="flex items-center gap-4">
-                            <div id="status-emoji" class="text-4xl w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center border-2 border-blue-100">🧚</div>
-                            <div>
-                                <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Weight Status</p>
-                                <p id="status-label" class="text-xl font-black text-gray-800">가뿐한 상태</p>
-                            </div>
-                        </div>
-                        <button onclick="showResult()" class="px-8 py-4 bg-black text-white rounded-2xl font-black hover:bg-blue-600 transition-all shadow-lg active:scale-95">진단하기</button>
-                    </div>
-                </div>
-            </div>
+    <!-- 랜딩 페이지 (Intro) -->
+    <div id="landing-page" class="absolute inset-0 z-[200] bg-white flex flex-col items-center justify-center p-8 text-center page-transition">
+        <div class="mb-6 animate-float">
+            <div class="text-[120px] leading-none mb-2 select-none">🧚</div>
+            <div class="inline-block bg-blue-100 text-blue-600 px-4 py-1 rounded-full font-bold text-sm tracking-widest uppercase gothic-text">My Bag Fairy</div>
         </div>
+        <h1 class="text-7xl font-bold italic mb-4 leading-none">가방 요정<br><span class="text-blue-600 underline decoration-yellow-300">기록장</span></h1>
+        <p class="text-slate-400 font-medium mb-12 break-keep text-lg gothic-text">오늘 내 가방 안에는 무엇이 들어있을까요?<br>요정과 함께 무게를 확인해보세요.</p>
+        
+        <button onclick="startApp()" class="w-full max-w-xs py-5 bg-blue-600 text-white rounded-[35px] font-bold text-2xl shadow-2xl shadow-blue-200 active:scale-95 transition-all gothic-text">
+            기록 시작하기
+        </button>
+        <p class="mt-8 text-slate-300 text-xs font-bold uppercase tracking-widest gothic-text">© 2026 Bag Fairy Studio</p>
+    </div>
 
-        <!-- 오른쪽: 스티커 보관함 -->
-        <div class="w-full md:w-[400px] bg-white border-l-4 border-gray-100 p-8 h-screen flex flex-col z-50">
-            <h3 class="text-4xl font-black mb-6 tracking-tighter italic">Stickers</h3>
-            
-            <!-- 탭 메뉴 -->
-            <div class="flex gap-2 bg-gray-100 p-1 rounded-2xl mb-8">
-                <button onclick="switchTab('school')" id="tab-school" class="flex-1 py-3 rounded-xl font-black text-sm bg-white shadow-sm">School</button>
-                <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 py-3 rounded-xl font-black text-sm text-gray-400">Daily</button>
-                <button onclick="switchTab('custom')" id="tab-custom" class="flex-1 py-3 rounded-xl font-black text-sm text-gray-400">Custom</button>
+    <!-- 메인 앱 화면 -->
+    <div id="main-app" class="h-screen flex flex-col opacity-0 pointer-events-none page-transition transform translate-y-10">
+        <!-- 상단 정보 -->
+        <header class="p-5 flex justify-between items-start z-10 shrink-0">
+            <div class="flex flex-col">
+                <span class="text-blue-500 font-bold text-sm tracking-widest gothic-text">MAY 16, 2026</span>
+                <h1 class="diary-title font-bold italic text-slate-900">가방 요정 <span class="text-blue-600 underline decoration-yellow-300 decoration-4 underline-offset-4">기록장</span></h1>
+            </div>
+            <div class="bg-yellow-300 text-black px-4 py-1.5 rounded-2xl font-bold text-sm rotate-2 shadow-sm border-2 border-white gothic-text">PAGE 01</div>
+        </header>
+
+        <!-- 꾸미기 캔버스 -->
+        <main id="drop-zone" class="flex-1 notebook-canvas relative mx-4 mb-24 rounded-[45px] bg-white border-8 border-white shadow-2xl overflow-hidden touch-none">
+            <div id="empty-msg" class="absolute inset-0 flex flex-col items-center justify-center opacity-30 pointer-events-none">
+                <p class="text-4xl font-bold italic text-gray-400">요정의 가방을 채워주세요!</p>
             </div>
 
-            <!-- 스티커 리스트 -->
-            <div id="sticker-list" class="flex-1 overflow-y-auto custom-scrollbar pr-2 grid grid-cols-2 gap-4">
-                <!-- JS에서 동적으로 생성 -->
+            <!-- 가방 실루엣 가이드 -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04]">
+                <svg width="280" height="280" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             </div>
 
-            <!-- 커스텀 업로드 버튼 (Custom 탭일 때만 표시) -->
-            <div id="custom-upload-area" class="hidden mt-4">
-                <label class="flex flex-col items-center justify-center w-full aspect-square border-4 border-dashed border-gray-200 rounded-[30px] hover:border-blue-400 cursor-pointer bg-gray-50 transition-all">
-                    <input type="file" class="hidden" accept="image/*" onchange="handleCustomUpload(event)">
-                    <div id="upload-inner">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mb-2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                        <p class="text-xs font-black text-gray-400 uppercase">누끼 따기 시작</p>
+            <div id="sticker-container" class="absolute inset-0"></div>
+        </main>
+
+        <!-- 하단 상태 바 -->
+        <div class="fixed bottom-0 left-0 right-0 p-4 z-[95] pointer-events-none">
+            <div class="max-w-md mx-auto bg-white/95 backdrop-blur-xl border-2 border-white p-3.5 rounded-[35px] shadow-2xl flex items-center justify-between pointer-events-auto ring-1 ring-black/5">
+                <div class="flex items-center gap-3">
+                    <div id="status-emoji" class="text-3xl w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center shadow-inner border-2 border-white">🧚</div>
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter gothic-text">Current Mood</p>
+                        <p id="status-label" class="text-3xl font-bold text-slate-800 leading-none">가뿐한 출발</p>
                     </div>
-                </label>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="toggleDrawer()" class="w-14 h-14 flex items-center justify-center bg-slate-100 rounded-2xl hover:bg-slate-200 transition-colors">
+                        <svg id="drawer-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300"><path d="m18 15-6-6-6 6"/></svg>
+                    </button>
+                    <button onclick="showResult()" class="px-8 h-14 bg-blue-600 text-white rounded-2xl font-bold text-2xl shadow-lg active:scale-90 transition-all dongle-title">진단!</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 결과 레이어 (모달) -->
-    <div id="result-modal" class="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md hidden items-center justify-center p-6">
-        <div class="bg-white w-full max-w-md rounded-[50px] border-[12px] border-white shadow-2xl p-10 space-y-8 animate-in scale-95 opacity-0">
-            <div class="flex justify-between items-center">
-                <span class="bg-yellow-400 px-4 py-1 rounded-full font-black text-[10px] -rotate-2 shadow">DIAGNOSIS</span>
-                <button onclick="closeModal()" class="text-gray-300 hover:text-black">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-                </button>
+    <!-- 스티커 보관함 서랍 -->
+    <div id="sticker-drawer" class="fixed inset-0 bg-black/30 backdrop-blur-sm pointer-events-none flex flex-col justify-end drawer-closed">
+        <div class="bg-white w-full h-[75vh] rounded-t-[55px] shadow-[0_-15px_40px_rgba(0,0,0,0.15)] flex flex-col pointer-events-auto relative border-t-[12px] border-white">
+            <div onclick="toggleDrawer()" class="w-full h-10 flex items-center justify-center cursor-pointer">
+                <div class="w-14 h-1.5 bg-slate-200 rounded-full"></div>
             </div>
-            <div class="flex items-center gap-6">
-                <div id="res-emoji" class="text-7xl p-4 bg-gray-50 rounded-3xl shadow-inner">🧚</div>
-                <div>
-                    <h4 id="res-label" class="text-3xl font-black italic tracking-tighter">가뿐한 요정</h4>
-                    <p id="res-weight" class="text-gray-400 font-bold">Total: 0.00kg</p>
+            
+            <div class="px-8 pb-8 flex flex-col h-full">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-5xl font-bold italic tracking-tight">Pocket</h3>
+                    <button onclick="toggleDrawer()" class="text-slate-300 font-bold p-2 text-2xl gothic-text">&times;</button>
+                </div>
+                
+                <div class="flex gap-2 bg-slate-100 p-1.5 rounded-2xl mb-6">
+                    <button onclick="switchTab('school')" id="tab-school" class="flex-1 py-3 rounded-xl font-bold text-base bg-white shadow-sm text-blue-600 transition-all gothic-text">SCHOOL</button>
+                    <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 py-3 rounded-xl font-bold text-base text-slate-400 transition-all gothic-text">DAILY</button>
+                    <button onclick="switchTab('custom')" id="tab-custom" class="flex-1 py-3 rounded-xl font-bold text-base text-slate-400 transition-all gothic-text">MY</button>
+                </div>
+
+                <div id="sticker-list" class="flex-1 overflow-y-auto custom-scrollbar pr-1 grid grid-cols-3 gap-5 content-start"></div>
+
+                <div id="custom-upload-area" class="hidden mt-4 pb-6">
+                    <label class="flex items-center justify-center w-full h-28 border-4 border-dashed border-slate-200 rounded-[35px] bg-slate-50 active:bg-blue-50 cursor-pointer transition-colors">
+                        <input type="file" class="hidden" accept="image/*" onchange="handleCustomUpload(event)">
+                        <div id="upload-inner" class="flex flex-col items-center gap-2">
+                            <div class="bg-white p-3 rounded-full shadow-sm text-blue-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            </div>
+                            <p class="text-xs font-bold text-slate-400 gothic-text">사진 찍어 스티커 추가</p>
+                        </div>
+                    </label>
                 </div>
             </div>
-            <div class="p-8 bg-gray-50 rounded-[35px] border-4 border-dashed border-gray-200">
-                <p id="res-comment" class="text-xl font-bold text-gray-700 leading-relaxed italic break-keep">
-                    "가방 속에 아무것도 없네요! 요정이 심심해해요."
+        </div>
+    </div>
+
+    <!-- 결과 모달 -->
+    <div id="result-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-lg hidden items-center justify-center p-6">
+        <div class="bg-white w-full max-w-sm rounded-[60px] border-[12px] border-white shadow-2xl p-10 space-y-8 scale-90 opacity-0 transition-all duration-300">
+            <div class="flex flex-col items-center text-center gap-5">
+                <div id="res-emoji" class="text-8xl p-6 bg-yellow-50 rounded-[45px] border-4 border-white shadow-inner">🧚</div>
+                <div>
+                    <h4 id="res-label" class="text-5xl font-bold italic tracking-tighter text-slate-900">가뿐한 요정</h4>
+                    <p id="res-weight" class="text-blue-600 text-2xl font-bold mt-2 gothic-text">총 0.00kg</p>
+                </div>
+            </div>
+            <div class="p-8 bg-blue-50 rounded-[40px] border-4 border-dashed border-blue-100 text-center">
+                <p id="res-comment" class="text-3xl font-bold text-slate-700 leading-tight italic break-keep">
+                    "가방이 텅 비었어요!"
                 </p>
             </div>
-            <button onclick="closeModal()" class="w-full py-5 bg-blue-500 text-white rounded-[25px] font-black text-xl shadow-xl shadow-blue-100 hover:bg-black transition-all">다시 꾸미기</button>
+            <button onclick="closeModal()" class="w-full py-5 bg-slate-900 text-white rounded-[35px] font-bold text-3xl shadow-xl active:scale-95 transition-transform dongle-title">확인!</button>
         </div>
     </div>
 
@@ -146,6 +232,7 @@
         let currentItems = [];
         let customStickers = [];
         let currentTab = 'school';
+        let drawerOpen = false;
 
         const PRESETS = {
             school: [
@@ -153,36 +240,69 @@
                 { name: '아이패드', weight: 0.6, emoji: '📱' },
                 { name: '전공책', weight: 1.2, emoji: '📚' },
                 { name: '필통', weight: 0.3, emoji: '✏️' },
-                { name: '헤드폰', weight: 0.4, emoji: '🎧' }
+                { name: '헤드폰', weight: 0.4, emoji: '🎧' },
+                { name: '텀블러', weight: 0.8, emoji: '🥤' }
             ],
             daily: [
                 { name: '지갑', weight: 0.2, emoji: '👛' },
-                { name: '텀블러', weight: 0.8, emoji: '🥤' },
                 { name: '파우치', weight: 0.5, emoji: '💄' },
                 { name: '우산', weight: 0.4, emoji: '⛱️' },
-                { name: '안경', weight: 0.1, emoji: '👓' }
+                { name: '보조배터리', weight: 0.3, emoji: '🔋' },
+                { name: '안경캐이스', weight: 0.15, emoji: '👓' },
+                { name: '간식백', weight: 0.2, emoji: '🥨' }
             ]
         };
 
         const STRAIN = [
-            { threshold: 0.5, label: '깃털처럼 가뿐', emoji: '🧚', comment: '가방이 너무 가벼워서 요정이 날아갈 것 같아요! 🧚' },
-            { threshold: 2.5, label: '딱 적당한 무게', emoji: '✨', comment: '완벽한 무게예요! 어깨도 요정도 모두 행복합니다. ✨' },
-            { threshold: 5.0, label: '조금 묵직해요', emoji: '😟', comment: '조금 무겁네요. 어깨 스트레칭이 필요할 것 같아요. 🧘' },
-            { threshold: 8.0, label: '어깨 탈출 경보', emoji: '🐢', comment: '가방 속에 돌덩이를 넣으셨나요? 당장 짐을 덜어내세요! 🐢' },
-            { threshold: Infinity, label: '척추 탈출!', emoji: '💀', comment: '이건 가방이 아니라 흉기예요! 건강을 위해 짐을 줄여요! 💀' }
+            { threshold: 0.5, label: '깃털 가뿐', emoji: '🧚', comment: '요정이 날아갈 정도예요! 가벼운 발걸음! 🧚' },
+            { threshold: 2.5, label: '기분 좋은', emoji: '✨', comment: '딱 좋은 무게네요! 오늘 하루 화이팅! ✨' },
+            { threshold: 5.0, label: '조금 묵직', emoji: '😟', comment: '조금 무겁네요. 어깨 스트레칭 필수! 🧘' },
+            { threshold: 8.0, label: '요정 위기', emoji: '🐢', comment: '가방 요정이 땀을 흘려요! 무리하지 마세요. 🐢' },
+            { threshold: Infinity, label: '척추 비상', emoji: '💀', comment: '너무 무거워요! 당장 짐을 정리하세요! 💀' }
         ];
+
+        function startApp() {
+            const landing = document.getElementById('landing-page');
+            const main = document.getElementById('main-app');
+            
+            landing.style.opacity = '0';
+            landing.style.transform = 'scale(1.1)';
+            
+            setTimeout(() => {
+                landing.style.display = 'none';
+                main.classList.remove('pointer-events-none');
+                main.style.opacity = '1';
+                main.style.transform = 'translateY(0)';
+                init();
+            }, 500);
+        }
 
         function init() {
             renderStickerList();
+            updateStatus();
+        }
+
+        function toggleDrawer() {
+            drawerOpen = !drawerOpen;
+            const drawer = document.getElementById('sticker-drawer');
+            const icon = document.getElementById('drawer-icon');
+            if (drawerOpen) {
+                drawer.classList.remove('drawer-closed', 'pointer-events-none');
+                drawer.classList.add('drawer-open');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                drawer.classList.remove('drawer-open');
+                drawer.classList.add('drawer-closed', 'pointer-events-none');
+                icon.style.transform = 'rotate(0deg)';
+            }
         }
 
         function switchTab(tab) {
             currentTab = tab;
             ['school', 'daily', 'custom'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
-                btn.className = `flex-1 py-3 rounded-xl font-black text-sm ${t === tab ? 'bg-white shadow-sm text-black' : 'text-gray-400'}`;
+                btn.className = `flex-1 py-3 rounded-xl font-bold text-base transition-all gothic-text ${t === tab ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`;
             });
-            
             document.getElementById('custom-upload-area').classList.toggle('hidden', tab !== 'custom');
             renderStickerList();
         }
@@ -190,34 +310,22 @@
         function renderStickerList() {
             const list = document.getElementById('sticker-list');
             list.innerHTML = '';
-            
             let items = currentTab === 'custom' ? customStickers : PRESETS[currentTab];
             
-            items.forEach((item, index) => {
+            items.forEach((item) => {
                 const div = document.createElement('div');
-                div.className = "group flex flex-col items-center gap-2 cursor-grab active:cursor-grabbing";
-                div.draggable = true;
-                div.ondragstart = (e) => {
-                    e.dataTransfer.setData("application/json", JSON.stringify(item));
-                };
+                div.className = "flex flex-col items-center gap-1 active:scale-90 transition-transform";
                 div.onclick = () => {
-                    // 클릭해서도 추가 가능하게
-                    const x = 30 + Math.random() * 40;
-                    const y = 30 + Math.random() * 40;
-                    addStickerToCanvas(item, x, y);
+                    addStickerToCanvas(item, 30 + Math.random() * 40, 30 + Math.random() * 40);
+                    toggleDrawer();
                 };
 
                 const box = document.createElement('div');
-                box.className = "w-full aspect-square bg-gray-50 rounded-[30px] flex items-center justify-center text-5xl hover:bg-blue-50 hover:scale-105 transition-all shadow-sm border-2 border-transparent hover:border-blue-100";
-                
-                if (item.image) {
-                    box.innerHTML = `<img src="${item.image}" class="w-full h-full object-contain p-4 drop-shadow-md">`;
-                } else {
-                    box.innerHTML = `<span class="drop-shadow-md">${item.emoji}</span>`;
-                }
+                box.className = "w-full aspect-square bg-slate-50 rounded-3xl flex items-center justify-center text-4xl shadow-sm border-2 border-white";
+                box.innerHTML = item.image ? `<img src="${item.image}" class="w-full h-full object-contain p-3">` : `<span class="select-none">${item.emoji}</span>`;
 
                 const name = document.createElement('p');
-                name.className = "text-[10px] font-black text-gray-400 group-hover:text-black uppercase";
+                name.className = "text-[12px] font-bold text-slate-400 truncate w-full text-center uppercase gothic-text";
                 name.innerText = item.name;
 
                 div.appendChild(box);
@@ -229,23 +337,21 @@
         async function handleCustomUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
-
             const inner = document.getElementById('upload-inner');
             const originalHTML = inner.innerHTML;
-            inner.innerHTML = `<div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent mb-2"></div><p class="text-[10px] font-black">누끼 따는 중...</p>`;
+            inner.innerHTML = `<div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>`;
 
             const reader = new FileReader();
             reader.onload = async (event) => {
                 const base64Data = event.target.result.split(',')[1];
                 try {
-                    // Gemini API를 사용하여 물체 분석 시뮬레이션
                     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             contents: [{
                                 parts: [
-                                    { text: "이 이미지의 메인 물체가 무엇인지 단어 하나로 말해주고, 예상 무게(kg)를 알려줘. JSON: { 'name': '이름', 'weight': 0.5 }" },
+                                    { text: "이 이미지의 물체 이름과 예상 무게(kg)를 알려줘. JSON: { 'name': '이름', 'weight': 0.5 }" },
                                     { inlineData: { mimeType: "image/png", data: base64Data } }
                                 ]
                             }],
@@ -254,74 +360,79 @@
                     });
                     const result = await response.json();
                     const info = JSON.parse(result.candidates[0].content.parts[0].text);
-                    
-                    customStickers.unshift({
-                        name: info.name || "커스텀",
-                        weight: info.weight || 0.5,
-                        image: event.target.result
-                    });
+                    customStickers.unshift({ name: info.name || "나의 물건", weight: info.weight || 0.2, image: event.target.result });
                     renderStickerList();
-                } catch (err) {
-                    console.error(err);
-                } finally {
-                    inner.innerHTML = originalHTML;
-                }
+                } catch (err) { console.error(err); } 
+                finally { inner.innerHTML = originalHTML; }
             };
             reader.readAsDataURL(file);
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            const data = e.dataTransfer.getData("application/json");
-            if (!data) return;
-
-            const rect = document.getElementById('drop-zone').getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
-            
-            addStickerToCanvas(JSON.parse(data), x, y);
         }
 
         function addStickerToCanvas(item, x, y) {
             document.getElementById('empty-msg').style.display = 'none';
             const id = Date.now();
-            const rotation = Math.random() * 20 - 10;
+            const rotation = Math.random() * 16 - 8;
             
             const sticker = document.createElement('div');
             sticker.id = `sticker-${id}`;
-            sticker.className = "absolute sticker-cut group cursor-move flex flex-col items-center";
+            sticker.className = "absolute animate-pop flex flex-col items-center z-20";
             sticker.style.left = `${x}%`;
             sticker.style.top = `${y}%`;
             sticker.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+            
+            let isDragging = false;
+            let startX, startY;
+
+            sticker.ontouchstart = (e) => {
+                isDragging = true;
+                const touch = e.touches[0];
+                startX = touch.clientX - sticker.offsetLeft;
+                startY = touch.clientY - sticker.offsetTop;
+                sticker.style.zIndex = "1000";
+            };
+
+            document.ontouchmove = (e) => {
+                if (!isDragging) return;
+                const touch = e.touches[0];
+                const rect = document.getElementById('drop-zone').getBoundingClientRect();
+                let newX = ((touch.clientX - rect.left) / rect.width) * 100;
+                let newY = ((touch.clientY - rect.top) / rect.height) * 100;
+                newX = Math.max(5, Math.min(95, newX));
+                newY = Math.max(5, Math.min(95, newY));
+                sticker.style.left = `${newX}%`;
+                sticker.style.top = `${newY}%`;
+            };
+
+            document.ontouchend = () => {
+                if (isDragging) {
+                    isDragging = false;
+                    sticker.style.zIndex = "20";
+                }
+            };
 
             const borderWrap = document.createElement('div');
-            borderWrap.className = "die-cut-border relative";
-            
-            if (item.image) {
-                borderWrap.innerHTML = `<img src="${item.image}" class="w-24 h-24 object-contain">`;
-            } else {
-                borderWrap.innerHTML = `<span class="text-7xl select-none">${item.emoji}</span>`;
-            }
+            borderWrap.className = "die-cut-border";
+            borderWrap.innerHTML = item.image ? `<img src="${item.image}" class="w-24 h-24 object-contain">` : `<span class="text-7xl select-none leading-none block">${item.emoji}</span>`;
 
-            // 삭제 버튼
             const delBtn = document.createElement('button');
-            delBtn.className = "absolute -top-4 -right-4 bg-red-500 text-white w-8 h-8 rounded-full border-4 border-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center font-black";
-            delBtn.innerText = "X";
-            delBtn.onclick = () => {
+            delBtn.className = "absolute -top-3 -right-3 bg-red-500 text-white w-10 h-10 rounded-full border-4 border-white shadow-xl flex items-center justify-center font-bold text-2xl active:scale-125 z-30 gothic-text";
+            delBtn.innerHTML = "&times;";
+            delBtn.onclick = (e) => {
+                e.stopPropagation();
                 sticker.remove();
                 currentItems = currentItems.filter(i => i.id !== id);
                 updateStatus();
             };
 
             const label = document.createElement('div');
-            label.className = "mt-2 bg-black text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tight shadow-md";
+            label.className = "sticker-label font-bold shadow-lg";
             label.innerText = item.name;
 
             sticker.appendChild(borderWrap);
             sticker.appendChild(delBtn);
             sticker.appendChild(label);
-            document.getElementById('drop-zone').appendChild(sticker);
-
+            
+            document.getElementById('sticker-container').appendChild(sticker);
             currentItems.push({ ...item, id });
             updateStatus();
         }
@@ -335,43 +446,29 @@
                     break;
                 }
             }
-            
             document.getElementById('status-emoji').innerText = status.emoji;
             document.getElementById('status-label').innerText = status.label;
-            
-            // 결과창 데이터용 업데이트
             window.currentReport = { total, status };
         }
 
         function showResult() {
-            if (currentItems.length === 0) {
-                updateStatus(); // 기본값 세팅
-            }
             const { total, status } = window.currentReport || { total: 0, status: STRAIN[0] };
-            
             document.getElementById('res-emoji').innerText = status.emoji;
             document.getElementById('res-label').innerText = status.label;
-            document.getElementById('res-weight').innerText = `Total: ${total.toFixed(2)}kg`;
+            document.getElementById('res-weight').innerText = `총 ${total.toFixed(2)}kg`;
             document.getElementById('res-comment').innerText = `"${status.comment}"`;
             
             const modal = document.getElementById('result-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            setTimeout(() => {
-                modal.querySelector('div').classList.remove('scale-95', 'opacity-0');
-            }, 10);
+            setTimeout(() => modal.querySelector('div').classList.remove('scale-90', 'opacity-0'), 10);
         }
 
         function closeModal() {
             const modal = document.getElementById('result-modal');
-            modal.querySelector('div').classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
+            modal.querySelector('div').classList.add('scale-90', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
         }
-
-        window.onload = init;
     </script>
 </body>
 </html>

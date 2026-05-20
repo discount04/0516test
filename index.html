@@ -8,7 +8,7 @@
     <!-- 구글 폰트: Dongle(메인용), IBM Plex Sans KR(고딕/본문용) -->
     <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@300;400;700&family=IBM+Plex+Sans+KR:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* 로컬 폰트 (백업용 유지) */
+        /* 로컬 폰트 */
         @font-face {
             font-family: 'OkMallang';
             src: url('./Ok Mallang B.otf') format('opentype');
@@ -18,63 +18,81 @@
         }
 
         :root {
-            /* 메인 폰트: Dongle (둥글고 귀여운 느낌) */
             --main-font: 'Dongle', 'OkMallang', sans-serif;
-            /* 고딕 폰트: IBM Plex Sans KR (깔끔한 본문용) */
             --gothic-font: 'IBM Plex Sans KR', sans-serif;
+            
+            /* 유저 요청 파스텔 감성 컬러칩 정의 */
+            --color-light-green: #E2F9CF;
+            --color-sage-green: #75A47F;
+            --color-slate-blue: #90A4C4;
+            --color-muted-pink: #EC9EC0;
+            --color-cream: #FAF7F2;
         }
 
         body {
             font-family: var(--main-font);
-            background-color: #f8fafc;
-            background-image: radial-gradient(#e2e8f0 1.2px, transparent 1.2px);
+            background-color: var(--color-cream);
+            background-image: radial-gradient(#d9d4cb 1.2px, transparent 1.2px);
             background-size: 20px 20px;
-            color: #333;
+            color: #4a453e;
             overscroll-behavior: none;
-            touch-action: pan-x pan-y;
-            font-size: 1.4rem; /* Dongle 폰트는 작게 보일 수 있어 기본 크기를 키웠습니다 */
+            touch-action: none; /* 드래그 조작 시 웹 뷰 자체 스크롤 완전 차단 */
+            font-size: 1.4rem;
         }
 
-        /* 고딕체(IBM Plex Sans KR)가 필요한 부분에 적용 */
-        .gothic-text, button, p, span:not(.emoji) {
+        /* 고딕 폰트 지정 */
+        .gothic-text, button, p, span:not(.emoji), input {
             font-family: var(--gothic-font);
         }
 
-        /* 제목이나 강조된 부분은 다시 Dongle 적용 */
-        .dongle-title, h1, h3, #status-label, #res-label {
+        /* 메인 볼드 제목 폰트 지정 */
+        .dongle-title, h1, h2, h3, #status-label, #res-label, .dongle-font {
             font-family: var(--main-font);
             line-height: 0.9;
         }
 
+        /* 공책 줄무늬 격자 배경 */
         .notebook-canvas {
+            background-color: #ffffff;
             background-image: 
-                linear-gradient(#f1f5f9 1px, transparent 1px),
-                linear-gradient(90deg, #f1f5f9 1px, transparent 1px);
+                linear-gradient(#f3ece1 1px, transparent 1px),
+                linear-gradient(90deg, #f3ece1 1px, transparent 1px);
             background-size: 25px 25px;
         }
 
         .diary-title {
-            font-size: 3.5rem; /* Dongle 폰트에 맞게 크기 조정 */
+            font-size: 2.2rem;
             letter-spacing: -0.02em;
         }
 
+        /* 마스킹 테이프 감성 데코 */
+        .washi-tape {
+            background-color: var(--color-light-green);
+            opacity: 0.85;
+            transform: rotate(-1.5deg);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.03);
+            border-left: 2px dashed rgba(255,255,255,0.5);
+            border-right: 2px dashed rgba(255,255,255,0.5);
+        }
+
+        /* 다이컷 흰색 테두리 효과 */
         .die-cut-border {
-            padding: 10px;
+            padding: 8px;
             background: white;
-            border-radius: 20px;
+            border-radius: 18px;
             border: 4px solid white;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 16px rgba(117, 100, 80, 0.12);
             display: inline-block;
             pointer-events: none;
         }
 
         .sticker-label {
-            margin-top: 6px;
-            background: #475569;
+            margin-top: 4px;
+            background: #5c554e;
             color: white;
             padding: 2px 8px;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 11px;
             font-family: var(--gothic-font);
             transform: rotate(-1deg);
             white-space: nowrap;
@@ -82,20 +100,21 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
+        /* 바텀시트 애니메이션 */
         #sticker-drawer {
-            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 100;
         }
 
         .drawer-open { transform: translateY(0) !important; }
-        .drawer-closed { transform: translateY(calc(100% - 65px)) !important; }
+        .drawer-closed { transform: translateY(100%) !important; }
 
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
         @keyframes floating {
             0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(5deg); }
+            50% { transform: translateY(-10px) rotate(3deg); }
         }
         .animate-float { animation: floating 4s infinite ease-in-out; }
 
@@ -106,124 +125,202 @@
         .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         
         .page-transition {
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        /* 캘린더 그리드 스타일 */
+        .calendar-grid-cell {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .calendar-grid-cell:active {
+            transform: scale(0.9);
+        }
+
+        .dragging-sticker {
+            opacity: 0.8;
+            scale: 1.15;
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.25)) !important;
         }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
 
-    <!-- 랜딩 페이지 (Intro) -->
-    <div id="landing-page" class="absolute inset-0 z-[200] bg-white flex flex-col items-center justify-center p-8 text-center page-transition">
-        <div class="mb-6 animate-float">
-            <div class="text-[120px] leading-none mb-2 select-none">🧚</div>
-            <div class="inline-block bg-blue-100 text-blue-600 px-4 py-1 rounded-full font-bold text-sm tracking-widest uppercase gothic-text">My Bag Fairy</div>
+    <!-- 1. 닉네임 입력 및 시작용 웰컴 페이지 -->
+    <div id="landing-page" class="absolute inset-0 z-[200] bg-[#FAF7F2] flex flex-col items-center justify-center p-8 text-center page-transition">
+        <div class="mb-4 animate-float">
+            <div class="text-[100px] leading-none mb-2 select-none">🧚</div>
+            <div class="inline-block bg-[#E2F9CF] text-[#75A47F] px-4 py-1 rounded-full font-bold text-sm tracking-widest uppercase gothic-text">My Bag Fairy</div>
         </div>
-        <h1 class="text-7xl font-bold italic mb-4 leading-none">가방 요정<br><span class="text-blue-600 underline decoration-yellow-300">기록장</span></h1>
-        <p class="text-slate-400 font-medium mb-12 break-keep text-lg gothic-text">오늘 내 가방 안에는 무엇이 들어있을까요?<br>요정과 함께 무게를 확인해보세요.</p>
+        <h1 class="text-6xl font-bold italic mb-6 leading-none">가방 요정<br><span class="text-[#90A4C4] underline decoration-[#EC9EC0] decoration-4">기록장</span></h1>
         
-        <button onclick="startApp()" class="w-full max-w-xs py-5 bg-blue-600 text-white rounded-[35px] font-bold text-2xl shadow-2xl shadow-blue-200 active:scale-95 transition-all gothic-text">
-            기록 시작하기
+        <!-- 닉네임 입력 박스 -->
+        <div class="w-full max-w-xs space-y-4 mb-8">
+            <input type="text" id="username-input" placeholder="귀여운 닉네임을 적어줘!" maxlength="10" 
+                   class="w-full px-6 py-4 bg-white border-2 border-[#E2F9CF] rounded-[20px] text-center font-bold text-lg focus:outline-none focus:border-[#90A4C4] transition-all shadow-inner">
+            <p class="text-xs text-slate-400 leading-normal gothic-text">※ 이전에 사용하던 닉네임을 그대로 입력하면<br>그 닉네임에 저장된 달력이 완벽히 복구됩니다!</p>
+        </div>
+
+        <button onclick="saveUserAndNext()" class="w-full max-w-xs py-4.5 bg-[#90A4C4] text-white rounded-[30px] font-bold text-xl shadow-lg active:scale-95 transition-all gothic-text">
+            다이어리 열기
         </button>
         <p class="mt-8 text-slate-300 text-xs font-bold uppercase tracking-widest gothic-text">© 2026 Bag Fairy Studio</p>
     </div>
 
-    <!-- 메인 앱 화면 -->
-    <div id="main-app" class="h-screen flex flex-col opacity-0 pointer-events-none page-transition transform translate-y-10">
-        <!-- 상단 정보 -->
-        <header class="p-5 flex justify-between items-start z-10 shrink-0">
-            <div class="flex flex-col">
-                <span class="text-blue-500 font-bold text-sm tracking-widest gothic-text">MAY 16, 2026</span>
-                <h1 class="diary-title font-bold italic text-slate-900">가방 요정 <span class="text-blue-600 underline decoration-yellow-300 decoration-4 underline-offset-4">기록장</span></h1>
+    <!-- 2. 메인 캘린더 일기 목록 페이지 -->
+    <div id="calendar-view" class="absolute inset-0 z-[150] bg-[#FAF7F2] flex flex-col page-transition hidden">
+        <!-- 상단 유저 헤더 -->
+        <header class="p-6 flex justify-between items-center shrink-0">
+            <div>
+                <span id="user-welcome-title" class="text-[#75A47F] font-bold text-xs tracking-wider gothic-text">안녕하세요!</span>
+                <h2 class="text-4xl font-bold italic text-slate-900 leading-none">나의 요정 달력</h2>
             </div>
-            <div class="bg-yellow-300 text-black px-4 py-1.5 rounded-2xl font-bold text-sm rotate-2 shadow-sm border-2 border-white gothic-text">PAGE 01</div>
+            <div onclick="resetNickname()" class="p-2.5 bg-white rounded-xl border border-slate-200/60 shadow-sm text-xs text-slate-400 font-bold gothic-text cursor-pointer hover:bg-slate-50">이름 수정</div>
         </header>
 
-        <!-- 꾸미기 캔버스 -->
-        <main id="drop-zone" class="flex-1 notebook-canvas relative mx-4 mb-24 rounded-[45px] bg-white border-8 border-white shadow-2xl overflow-hidden touch-none">
+        <!-- 격자 캘린더 디자인 -->
+        <div class="flex-1 bg-white mx-4 mb-24 rounded-[35px] border-4 border-white shadow-xl p-5 flex flex-col">
+            <!-- 연도 및 월 탐색 바 -->
+            <div class="flex justify-between items-center mb-6 px-2 shrink-0">
+                <button onclick="prevMonth()" class="text-2xl font-bold p-2 text-[#75A47F]">&lt;</button>
+                <h3 id="calendar-month-year" class="text-4xl font-bold text-slate-800">2026년 5월</h3>
+                <button onclick="nextMonth()" class="text-2xl font-bold p-2 text-[#75A47F]">&gt;</button>
+            </div>
+
+            <!-- 달력 요일 표시기 -->
+            <div class="grid grid-cols-7 gap-1 text-center font-bold text-slate-300 text-xs mb-4 uppercase tracking-wider gothic-text shrink-0">
+                <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+            </div>
+
+            <!-- 동적 일자 생성 구역 -->
+            <div id="calendar-days" class="grid grid-cols-7 gap-2 flex-1 overflow-y-auto custom-scrollbar"></div>
+        </div>
+
+        <!-- 오늘자 기록 작성 유도 플로팅 영역 -->
+        <div class="fixed bottom-0 left-0 right-0 p-4 z-[90]">
+            <div class="max-w-md mx-auto bg-[#90A4C4] p-4 rounded-[30px] shadow-2xl flex items-center justify-between text-white border-2 border-white/20">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">📝</span>
+                    <span class="text-lg font-bold gothic-text leading-tight text-white">오늘도 등교 완료!<br>가방 무게를 기록해보세요</span>
+                </div>
+                <button onclick="openEditorForDate(getTodayDateKey())" class="px-6 py-3 bg-white text-[#90A4C4] rounded-2xl font-bold text-lg shadow-lg active:scale-95 gothic-text">기록장 쓰기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 스티커 캔버스 꾸미기 화면 -->
+    <div id="main-app" class="h-screen flex flex-col opacity-0 pointer-events-none page-transition transform translate-y-10 hidden">
+        <!-- 캔버스 헤더 바 -->
+        <header class="p-5 flex justify-between items-start z-10 shrink-0">
+            <div class="flex items-center gap-3">
+                <button onclick="backToCalendar()" class="p-3 bg-white border border-slate-100 rounded-2xl text-slate-400 active:scale-95 transition-all shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="flex flex-col">
+                    <span id="editor-date-title" class="text-[#75A47F] font-bold text-xs tracking-widest gothic-text">MAY 16, 2026</span>
+                    <h1 class="diary-title font-bold italic text-slate-900">오늘의 가방 기록</h1>
+                </div>
+            </div>
+            <div class="washi-tape text-black px-4 py-1.5 rounded font-bold text-sm shadow-sm border-2 border-white/40 gothic-text">PAGE 01</div>
+        </header>
+
+        <!-- 공책 줄무늬 격자 배경 -->
+        <main id="drop-zone" class="flex-1 notebook-canvas relative mx-4 mb-24 rounded-[35px] border-4 border-white shadow-xl overflow-hidden touch-none">
             <div id="empty-msg" class="absolute inset-0 flex flex-col items-center justify-center opacity-30 pointer-events-none">
-                <p class="text-4xl font-bold italic text-gray-400">요정의 가방을 채워주세요!</p>
+                <p class="text-2xl font-bold italic text-gray-400">요정의 가방을 채워주세요!</p>
             </div>
 
-            <!-- 가방 실루엣 가이드 -->
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04]">
-                <svg width="280" height="280" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <!-- 희미하게 깔리는 배경 가방 이미지 -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] text-[#75A47F]">
+                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             </div>
 
+            <!-- 스티커 배치 래퍼 -->
             <div id="sticker-container" class="absolute inset-0"></div>
         </main>
 
-        <!-- 하단 상태 바 -->
-        <div class="fixed bottom-0 left-0 right-0 p-4 z-[95] pointer-events-none">
-            <div class="max-w-md mx-auto bg-white/95 backdrop-blur-xl border-2 border-white p-3.5 rounded-[35px] shadow-2xl flex items-center justify-between pointer-events-auto ring-1 ring-black/5">
-                <div class="flex items-center gap-3">
-                    <div id="status-emoji" class="text-3xl w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center shadow-inner border-2 border-white">🧚</div>
+        <!-- 캔버스 화면 하단 상태 플로팅 바 -->
+        <div class="fixed bottom-0 left-0 right-0 p-4 z-[90] pointer-events-none">
+            <div class="max-w-md mx-auto bg-white/95 backdrop-blur-xl border-2 border-[#E2F9CF] p-3.5 rounded-[28px] shadow-2xl flex items-center justify-between pointer-events-auto">
+                <div class="flex items-center gap-2.5">
+                    <div id="status-emoji" class="text-2xl w-11 h-11 bg-[#E2F9CF] rounded-xl flex items-center justify-center shadow-inner border border-white">🧚</div>
                     <div>
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter gothic-text">Current Mood</p>
-                        <p id="status-label" class="text-3xl font-bold text-slate-800 leading-none">가뿐한 출발</p>
+                        <p class="text-[9px] font-bold text-gray-400 uppercase tracking-tighter gothic-text">Current Mood</p>
+                        <p id="status-label" class="text-2xl font-bold text-slate-800 leading-none">가뿐한 출발</p>
                     </div>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="toggleDrawer()" class="w-14 h-14 flex items-center justify-center bg-slate-100 rounded-2xl hover:bg-slate-200 transition-colors">
-                        <svg id="drawer-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300"><path d="m18 15-6-6-6 6"/></svg>
+                <div class="flex gap-1.5">
+                    <button onclick="toggleDrawer()" class="w-11 h-11 flex items-center justify-center bg-slate-50 border border-slate-100 rounded-xl hover:bg-slate-100 active:scale-95 transition-colors">
+                        <svg id="drawer-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300"><path d="m18 15-6-6-6 6"/></svg>
                     </button>
-                    <button onclick="showResult()" class="px-8 h-14 bg-blue-600 text-white rounded-2xl font-bold text-2xl shadow-lg active:scale-90 transition-all dongle-title">진단!</button>
+                    <button onclick="saveDiaryAndAnalyze()" class="px-6 h-11 bg-[#90A4C4] text-white rounded-xl font-bold text-lg shadow-md active:scale-90 transition-all dongle-title">진단!</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 스티커 보관함 서랍 -->
-    <div id="sticker-drawer" class="fixed inset-0 bg-black/30 backdrop-blur-sm pointer-events-none flex flex-col justify-end drawer-closed">
-        <div class="bg-white w-full h-[75vh] rounded-t-[55px] shadow-[0_-15px_40px_rgba(0,0,0,0.15)] flex flex-col pointer-events-auto relative border-t-[12px] border-white">
-            <div onclick="toggleDrawer()" class="w-full h-10 flex items-center justify-center cursor-pointer">
-                <div class="w-14 h-1.5 bg-slate-200 rounded-full"></div>
+    <!-- 서랍 뒷배경 오버레이 -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[95] opacity-0 pointer-events-none transition-opacity duration-300" onclick="toggleDrawer()"></div>
+
+    <!-- 스티커 서랍 시트 -->
+    <div id="sticker-drawer" class="fixed bottom-0 left-0 right-0 h-[70vh] bg-white rounded-t-[40px] shadow-[0_-15px_30px_rgba(0,0,0,0.1)] flex flex-col drawer-closed border-t-8 border-[#FAF7F2] z-[100]">
+        <div onclick="toggleDrawer()" class="w-full h-8 flex items-center justify-center cursor-pointer shrink-0">
+            <div class="w-12 h-1 bg-slate-200 rounded-full"></div>
+        </div>
+        
+        <div class="px-6 pb-6 flex flex-col h-full overflow-hidden">
+            <div class="flex justify-between items-center mb-4 shrink-0">
+                <h3 class="text-5xl font-bold italic tracking-tight">Pocket</h3>
+                <button onclick="toggleDrawer()" class="text-slate-300 font-bold p-1 text-xl gothic-text">&times;</button>
             </div>
             
-            <div class="px-8 pb-8 flex flex-col h-full">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-5xl font-bold italic tracking-tight">Pocket</h3>
-                    <button onclick="toggleDrawer()" class="text-slate-300 font-bold p-2 text-2xl gothic-text">&times;</button>
-                </div>
-                
-                <div class="flex gap-2 bg-slate-100 p-1.5 rounded-2xl mb-6">
-                    <button onclick="switchTab('school')" id="tab-school" class="flex-1 py-3 rounded-xl font-bold text-base bg-white shadow-sm text-blue-600 transition-all gothic-text">SCHOOL</button>
-                    <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 py-3 rounded-xl font-bold text-base text-slate-400 transition-all gothic-text">DAILY</button>
-                    <button onclick="switchTab('custom')" id="tab-custom" class="flex-1 py-3 rounded-xl font-bold text-base text-slate-400 transition-all gothic-text">MY</button>
-                </div>
+            <div class="flex gap-1.5 bg-slate-100 p-1 rounded-xl mb-4 shrink-0">
+                <button onclick="switchTab('school')" id="tab-school" class="flex-1 py-2 rounded-lg font-bold text-sm bg-white shadow-sm text-[#90A4C4] transition-all gothic-text">SCHOOL</button>
+                <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 py-2 rounded-lg font-bold text-sm text-slate-400 transition-all gothic-text">DAILY</button>
+                <button onclick="switchTab('custom')" id="tab-custom" class="flex-1 py-2 rounded-lg font-bold text-sm text-slate-400 transition-all gothic-text">MY</button>
+            </div>
 
-                <div id="sticker-list" class="flex-1 overflow-y-auto custom-scrollbar pr-1 grid grid-cols-3 gap-5 content-start"></div>
+            <!-- 스티커 목록 -->
+            <div id="sticker-list" class="flex-1 overflow-y-auto custom-scrollbar pr-1 grid grid-cols-3 gap-4 content-start"></div>
 
-                <div id="custom-upload-area" class="hidden mt-4 pb-6">
-                    <label class="flex items-center justify-center w-full h-28 border-4 border-dashed border-slate-200 rounded-[35px] bg-slate-50 active:bg-blue-50 cursor-pointer transition-colors">
-                        <input type="file" class="hidden" accept="image/*" onchange="handleCustomUpload(event)">
-                        <div id="upload-inner" class="flex flex-col items-center gap-2">
-                            <div class="bg-white p-3 rounded-full shadow-sm text-blue-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                            </div>
-                            <p class="text-xs font-bold text-slate-400 gothic-text">사진 찍어 스티커 추가</p>
+            <!-- 누끼 스티커 제작 버튼 -->
+            <div id="custom-upload-area" class="hidden mt-4 pb-4 shrink-0">
+                <label class="flex items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50 active:bg-blue-50 cursor-pointer transition-colors">
+                    <input type="file" class="hidden" accept="image/*" onchange="handleCustomUpload(event)">
+                    <div id="upload-inner" class="flex flex-col items-center gap-1">
+                        <div class="bg-white p-2 rounded-full shadow-sm text-[#90A4C4]">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                         </div>
-                    </label>
-                </div>
+                        <p class="text-[11px] font-bold text-slate-400">사진으로 스티커 추가</p>
+                    </div>
+                </label>
             </div>
         </div>
     </div>
 
-    <!-- 결과 모달 -->
-    <div id="result-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-lg hidden items-center justify-center p-6">
-        <div class="bg-white w-full max-w-sm rounded-[60px] border-[12px] border-white shadow-2xl p-10 space-y-8 scale-90 opacity-0 transition-all duration-300">
+    <!-- 결과 통계 모달 -->
+    <div id="result-modal" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-md hidden items-center justify-center p-6">
+        <div class="bg-white w-full max-w-sm rounded-[45px] border-[8px] border-white shadow-2xl p-10 space-y-8 scale-90 opacity-0 transition-all duration-300">
             <div class="flex flex-col items-center text-center gap-5">
                 <div id="res-emoji" class="text-8xl p-6 bg-yellow-50 rounded-[45px] border-4 border-white shadow-inner">🧚</div>
                 <div>
-                    <h4 id="res-label" class="text-5xl font-bold italic tracking-tighter text-slate-900">가뿐한 요정</h4>
-                    <p id="res-weight" class="text-blue-600 text-2xl font-bold mt-2 gothic-text">총 0.00kg</p>
+                    <h4 id="res-label" class="text-4xl font-bold italic tracking-tighter text-slate-900">가뿐한 요정</h4>
+                    <p id="res-weight" class="text-[#90A4C4] text-2xl font-bold mt-2 gothic-text">총 0.00kg</p>
                 </div>
             </div>
-            <div class="p-8 bg-blue-50 rounded-[40px] border-4 border-dashed border-blue-100 text-center">
-                <p id="res-comment" class="text-3xl font-bold text-slate-700 leading-tight italic break-keep">
+            <div class="p-8 bg-[#E2F9CF] rounded-[40px] border-4 border-dashed border-white text-center">
+                <p id="res-comment" class="text-2xl font-bold text-[#75A47F] leading-tight italic break-keep">
                     "가방이 텅 비었어요!"
                 </p>
             </div>
-            <button onclick="closeModal()" class="w-full py-5 bg-slate-900 text-white rounded-[35px] font-bold text-3xl shadow-xl active:scale-95 transition-transform dongle-title">확인!</button>
+            <button onclick="closeModalAndCalendar()" class="w-full py-4.5 bg-[#90A4C4] text-white rounded-[35px] font-bold text-2xl shadow-xl active:scale-95 transition-transform dongle-title">달력에 스탬프 찍기!</button>
         </div>
     </div>
 
@@ -233,6 +330,13 @@
         let customStickers = [];
         let currentTab = 'school';
         let drawerOpen = false;
+
+        let selectedDateKey = ""; 
+        let calendarDate = new Date(); 
+        
+        // 멀티유저 데이터베이스 캐시
+        let currentUsername = "";
+        let diaryDatabase = {};
 
         const PRESETS = {
             school: [
@@ -253,46 +357,206 @@
             ]
         };
 
+        // 유저 파스텔 색상 정의에 어울리는 스펙 구축
         const STRAIN = [
-            { threshold: 0.5, label: '깃털 가뿐', emoji: '🧚', comment: '요정이 날아갈 정도예요! 가벼운 발걸음! 🧚' },
-            { threshold: 2.5, label: '기분 좋은', emoji: '✨', comment: '딱 좋은 무게네요! 오늘 하루 화이팅! ✨' },
-            { threshold: 5.0, label: '조금 묵직', emoji: '😟', comment: '조금 무겁네요. 어깨 스트레칭 필수! 🧘' },
-            { threshold: 8.0, label: '요정 위기', emoji: '🐢', comment: '가방 요정이 땀을 흘려요! 무리하지 마세요. 🐢' },
-            { threshold: Infinity, label: '척추 비상', emoji: '💀', comment: '너무 무거워요! 당장 짐을 정리하세요! 💀' }
+            { threshold: 0.5, label: '깃털 가뿐', emoji: '🧚', comment: '요정이 날아갈 정도예요! 가벼운 발걸음! 🧚', color: '#E2F9CF' },
+            { threshold: 2.5, label: '기분 좋은', emoji: '✨', comment: '딱 좋은 무게네요! 오늘 하루 화이팅! ✨', color: '#75A47F' },
+            { threshold: 5.0, label: '조금 묵직', emoji: '😟', comment: '조금 무겁네요. 어깨 스트레칭 필수! 🧘', color: '#90A4C4' },
+            { threshold: 8.0, label: '요정 위기', emoji: '🐢', comment: '가방 요정이 땀을 흘려요! 무리하지 마세요. 🐢', color: '#EC9EC0' },
+            { threshold: Infinity, label: '척추 비상', emoji: '💀', comment: '너무 무거워요! 당장 짐을 정리하세요! 💀', color: '#EC9EC0' }
         ];
 
-        function startApp() {
-            const landing = document.getElementById('landing-page');
-            const main = document.getElementById('main-app');
+        // --- 초기 세션 바인딩 ---
+        window.onload = function() {
+            const savedName = localStorage.getItem('bag_fairy_username');
+            if (savedName) {
+                document.getElementById('username-input').value = savedName;
+                document.getElementById('landing-page').style.display = 'none';
+                loadUserDatabase(savedName);
+            }
+        };
+
+        // 특정 닉네임 전용 데이터 복구 및 동기화
+        function loadUserDatabase(username) {
+            currentUsername = username;
             
+            // 유저 개별 키값을 사용하여 LocalStorage에서 독립 로드
+            const userDbKey = `bag_fairy_diary_user_${username}`;
+            const savedDb = localStorage.getItem(userDbKey);
+            
+            if (savedDb) {
+                diaryDatabase = JSON.parse(savedDb);
+            } else {
+                diaryDatabase = {}; // 신규 유저는 빈 달력으로 시작
+            }
+
+            showCalendarView(username);
+        }
+
+        function saveUserAndNext() {
+            const inputName = document.getElementById('username-input').value.trim();
+            if (!inputName) {
+                alert("귀여운 닉네임을 꼭 입력해 줘!");
+                return;
+            }
+            localStorage.setItem('bag_fairy_username', inputName);
+            
+            const landing = document.getElementById('landing-page');
             landing.style.opacity = '0';
             landing.style.transform = 'scale(1.1)';
             
             setTimeout(() => {
                 landing.style.display = 'none';
-                main.classList.remove('pointer-events-none');
-                main.style.opacity = '1';
-                main.style.transform = 'translateY(0)';
-                init();
-            }, 500);
+                loadUserDatabase(inputName);
+            }, 450);
         }
 
-        function init() {
+        function resetNickname() {
+            // 다른 닉네임으로 전환 가능하도록 유도
+            localStorage.removeItem('bag_fairy_username');
+            document.getElementById('landing-page').style.display = 'flex';
+            document.getElementById('landing-page').style.opacity = '1';
+            document.getElementById('landing-page').style.transform = 'scale(1)';
+            document.getElementById('calendar-view').classList.add('hidden');
+        }
+
+        // --- 캘린더 드로잉 조작 ---
+        function showCalendarView(username) {
+            document.getElementById('user-welcome-title').innerText = `어깨 건강 수호 중인 ${username}님`;
+            const calView = document.getElementById('calendar-view');
+            calView.classList.remove('hidden');
+            calView.style.opacity = '1';
+            renderCalendar();
+        }
+
+        function getTodayDateKey() {
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function renderCalendar() {
+            const daysContainer = document.getElementById('calendar-days');
+            daysContainer.innerHTML = '';
+
+            const currentYear = calendarDate.getFullYear();
+            const currentMonth = calendarDate.getMonth();
+
+            document.getElementById('calendar-month-year').innerText = `${currentYear}년 ${currentMonth + 1}월`;
+
+            const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+            const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = "calendar-grid-cell opacity-20";
+                daysContainer.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= lastDay; day++) {
+                const dayString = String(day).padStart(2, '0');
+                const monthString = String(currentMonth + 1).padStart(2, '0');
+                const dateKey = `${currentYear}-${monthString}-${dayString}`;
+
+                const cell = document.createElement('div');
+                cell.className = "calendar-grid-cell hover:bg-slate-50 border border-slate-100 shadow-sm";
+
+                const numSpan = document.createElement('span');
+                numSpan.className = "absolute top-2 left-3 font-bold text-xs text-slate-400 gothic-text";
+                numSpan.innerText = day;
+                cell.appendChild(numSpan);
+
+                // 현재 유저의 DB에서 읽어와 도장 표시 (감성 컬러 원형 스탬프 느낌 부여)
+                if (diaryDatabase[dateKey]) {
+                    const stamp = document.createElement('div');
+                    stamp.className = "w-8 h-8 rounded-full flex items-center justify-center text-xl select-none animate-pop shadow-sm";
+                    stamp.style.backgroundColor = diaryDatabase[dateKey].status.color || '#E2F9CF';
+                    stamp.innerText = diaryDatabase[dateKey].status.emoji;
+                    cell.appendChild(stamp);
+                    cell.classList.add("bg-slate-50/40");
+                }
+
+                if (dateKey === getTodayDateKey()) {
+                    cell.classList.add("ring-2", "ring-[#90A4C4]", "ring-offset-2");
+                }
+
+                cell.onclick = () => openEditorForDate(dateKey);
+                daysContainer.appendChild(cell);
+            }
+        }
+
+        function prevMonth() {
+            calendarDate.setMonth(calendarDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            calendarDate.setMonth(calendarDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        // --- 에디터 보드 조작 ---
+        function openEditorForDate(dateKey) {
+            selectedDateKey = dateKey;
+            const parts = dateKey.split('-');
+            document.getElementById('editor-date-title').innerText = `${parts[0]}. ${parts[1]}. ${parts[2]}`;
+
+            document.getElementById('sticker-container').innerHTML = '';
+            currentItems = [];
+
+            if (diaryDatabase[dateKey]) {
+                const savedData = diaryDatabase[dateKey];
+                savedData.items.forEach(item => {
+                    addStickerToCanvas(item, item.x, item.y, true);
+                });
+            } else {
+                document.getElementById('empty-msg').style.display = 'flex';
+            }
+
+            document.getElementById('calendar-view').classList.add('hidden');
+            const mainApp = document.getElementById('main-app');
+            mainApp.classList.remove('hidden');
+            setTimeout(() => {
+                mainApp.style.opacity = '1';
+                mainApp.classList.remove('pointer-events-none');
+                mainApp.style.transform = 'translateY(0)';
+            }, 50);
+
             renderStickerList();
             updateStatus();
         }
 
+        function backToCalendar() {
+            const mainApp = document.getElementById('main-app');
+            mainApp.style.opacity = '0';
+            mainApp.style.transform = 'translateY(10px)';
+            mainApp.classList.add('pointer-events-none');
+            
+            setTimeout(() => {
+                mainApp.classList.add('hidden');
+                showCalendarView(currentUsername);
+            }, 300);
+        }
+
+        // --- 스티커 드로어 시트 토글 ---
         function toggleDrawer() {
             drawerOpen = !drawerOpen;
             const drawer = document.getElementById('sticker-drawer');
+            const overlay = document.getElementById('drawer-overlay');
             const icon = document.getElementById('drawer-icon');
             if (drawerOpen) {
-                drawer.classList.remove('drawer-closed', 'pointer-events-none');
+                drawer.classList.remove('drawer-closed');
                 drawer.classList.add('drawer-open');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                overlay.classList.add('opacity-100');
                 icon.style.transform = 'rotate(180deg)';
             } else {
                 drawer.classList.remove('drawer-open');
-                drawer.classList.add('drawer-closed', 'pointer-events-none');
+                drawer.classList.add('drawer-closed');
+                overlay.classList.remove('opacity-100');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
                 icon.style.transform = 'rotate(0deg)';
             }
         }
@@ -301,7 +565,11 @@
             currentTab = tab;
             ['school', 'daily', 'custom'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
-                btn.className = `flex-1 py-3 rounded-xl font-bold text-base transition-all gothic-text ${t === tab ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`;
+                if (t === tab) {
+                    btn.className = "flex-1 py-2 rounded-lg font-bold text-sm bg-[#E2F9CF] text-[#75A47F] shadow-sm transition-all gothic-text";
+                } else {
+                    btn.className = "flex-1 py-2 rounded-lg font-bold text-sm text-slate-400 transition-all gothic-text";
+                }
             });
             document.getElementById('custom-upload-area').classList.toggle('hidden', tab !== 'custom');
             renderStickerList();
@@ -314,18 +582,18 @@
             
             items.forEach((item) => {
                 const div = document.createElement('div');
-                div.className = "flex flex-col items-center gap-1 active:scale-90 transition-transform";
+                div.className = "flex flex-col items-center gap-1 active:scale-90 transition-transform cursor-pointer";
                 div.onclick = () => {
                     addStickerToCanvas(item, 30 + Math.random() * 40, 30 + Math.random() * 40);
                     toggleDrawer();
                 };
 
                 const box = document.createElement('div');
-                box.className = "w-full aspect-square bg-slate-50 rounded-3xl flex items-center justify-center text-4xl shadow-sm border-2 border-white";
-                box.innerHTML = item.image ? `<img src="${item.image}" class="w-full h-full object-contain p-3">` : `<span class="select-none">${item.emoji}</span>`;
+                box.className = "w-full aspect-square bg-[#FAF7F2] rounded-2xl flex items-center justify-center text-4xl shadow-sm border-2 border-white";
+                box.innerHTML = item.image ? `<img src="${item.image}" class="w-full h-full object-contain p-2.5">` : `<span class="select-none">${item.emoji}</span>`;
 
                 const name = document.createElement('p');
-                name.className = "text-[12px] font-bold text-slate-400 truncate w-full text-center uppercase gothic-text";
+                name.className = "text-[11px] font-bold text-slate-400 truncate w-full text-center uppercase gothic-text";
                 name.innerText = item.name;
 
                 div.appendChild(box);
@@ -339,7 +607,7 @@
             if (!file) return;
             const inner = document.getElementById('upload-inner');
             const originalHTML = inner.innerHTML;
-            inner.innerHTML = `<div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>`;
+            inner.innerHTML = `<div class="animate-spin rounded-full h-6 w-6 border-4 border-[#90A4C4] border-t-transparent"></div>`;
 
             const reader = new FileReader();
             reader.onload = async (event) => {
@@ -368,57 +636,100 @@
             reader.readAsDataURL(file);
         }
 
-        function addStickerToCanvas(item, x, y) {
+        // --- 모바일 터치 및 데스크톱 마우스 정밀 드래그 제어 ---
+        function addStickerToCanvas(item, x, y, isRecovery = false) {
             document.getElementById('empty-msg').style.display = 'none';
-            const id = Date.now();
-            const rotation = Math.random() * 16 - 8;
+            const id = isRecovery ? item.id : Date.now();
+            const rotation = isRecovery ? item.rotation : (Math.random() * 16 - 8);
             
             const sticker = document.createElement('div');
             sticker.id = `sticker-${id}`;
-            sticker.className = "absolute animate-pop flex flex-col items-center z-20";
+            sticker.className = "absolute animate-pop flex flex-col items-center z-20 cursor-grab active:cursor-grabbing";
             sticker.style.left = `${x}%`;
             sticker.style.top = `${y}%`;
             sticker.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
             
-            let isDragging = false;
-            let startX, startY;
+            let activeDrag = false;
+            let initialX;
+            let initialY;
+            let currentXPercent = x;
+            let currentYPercent = y;
 
-            sticker.ontouchstart = (e) => {
-                isDragging = true;
-                const touch = e.touches[0];
-                startX = touch.clientX - sticker.offsetLeft;
-                startY = touch.clientY - sticker.offsetTop;
+            function dragStart(e) {
+                if (e.target.tagName.toLowerCase() === 'button') return; 
+                activeDrag = true;
+                sticker.classList.add('dragging-sticker');
                 sticker.style.zIndex = "1000";
-            };
 
-            document.ontouchmove = (e) => {
-                if (!isDragging) return;
-                const touch = e.touches[0];
-                const rect = document.getElementById('drop-zone').getBoundingClientRect();
-                let newX = ((touch.clientX - rect.left) / rect.width) * 100;
-                let newY = ((touch.clientY - rect.top) / rect.height) * 100;
+                const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+
+                const rect = sticker.getBoundingClientRect();
+                initialX = clientX - (rect.left + rect.width / 2);
+                initialY = clientY - (rect.top + rect.height / 2);
+            }
+
+            function dragMove(e) {
+                if (!activeDrag) return;
+                e.preventDefault();
+
+                const clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+
+                const dropZone = document.getElementById('drop-zone');
+                const rect = dropZone.getBoundingClientRect();
+
+                let newX = ((clientX - rect.left - initialX) / rect.width) * 100;
+                let newY = ((clientY - rect.top - initialY) / rect.height) * 100;
+
                 newX = Math.max(5, Math.min(95, newX));
                 newY = Math.max(5, Math.min(95, newY));
+
+                currentXPercent = newX;
+                currentYPercent = newY;
+
                 sticker.style.left = `${newX}%`;
                 sticker.style.top = `${newY}%`;
-            };
 
-            document.ontouchend = () => {
-                if (isDragging) {
-                    isDragging = false;
+                const targetObj = currentItems.find(i => i.id === id);
+                if (targetObj) {
+                    targetObj.x = newX;
+                    targetObj.y = newY;
+                }
+            }
+
+            function dragEnd() {
+                if (activeDrag) {
+                    activeDrag = false;
+                    sticker.classList.remove('dragging-sticker');
                     sticker.style.zIndex = "20";
                 }
-            };
+            }
+
+            sticker.addEventListener('mousedown', dragStart);
+            document.addEventListener('mousemove', dragMove);
+            document.addEventListener('mouseup', dragEnd);
+
+            sticker.addEventListener('touchstart', dragStart, { passive: false });
+            document.addEventListener('touchmove', dragMove, { passive: false });
+            document.addEventListener('touchend', dragEnd);
 
             const borderWrap = document.createElement('div');
-            borderWrap.className = "die-cut-border";
-            borderWrap.innerHTML = item.image ? `<img src="${item.image}" class="w-24 h-24 object-contain">` : `<span class="text-7xl select-none leading-none block">${item.emoji}</span>`;
+            borderWrap.className = "die-cut-border shadow-md";
+            borderWrap.innerHTML = item.image ? `<img src="${item.image}" class="w-20 h-20 object-contain">` : `<span class="text-6xl select-none leading-none block">${item.emoji}</span>`;
 
             const delBtn = document.createElement('button');
-            delBtn.className = "absolute -top-3 -right-3 bg-red-500 text-white w-10 h-10 rounded-full border-4 border-white shadow-xl flex items-center justify-center font-bold text-2xl active:scale-125 z-30 gothic-text";
+            delBtn.className = "absolute -top-3 -right-3 bg-[#EC9EC0] text-white w-8 h-8 rounded-full border-4 border-white shadow-xl flex items-center justify-center font-black text-xl active:scale-125 z-30 gothic-text";
             delBtn.innerHTML = "&times;";
             delBtn.onclick = (e) => {
                 e.stopPropagation();
+                sticker.removeEventListener('mousedown', dragStart);
+                document.removeEventListener('mousemove', dragMove);
+                document.removeEventListener('mouseup', dragEnd);
+                sticker.removeEventListener('touchstart', dragStart);
+                document.removeEventListener('touchmove', dragMove);
+                document.removeEventListener('touchend', dragEnd);
+                
                 sticker.remove();
                 currentItems = currentItems.filter(i => i.id !== id);
                 updateStatus();
@@ -433,7 +744,12 @@
             sticker.appendChild(label);
             
             document.getElementById('sticker-container').appendChild(sticker);
-            currentItems.push({ ...item, id });
+
+            if (!isRecovery) {
+                currentItems.push({ ...item, id, x: currentXPercent, y: currentYPercent, rotation });
+            } else {
+                currentItems.push(item);
+            }
             updateStatus();
         }
 
@@ -451,8 +767,25 @@
             window.currentReport = { total, status };
         }
 
-        function showResult() {
+        // --- 로컬스토리지 멀티유저 개별 보존 처리 ---
+        function saveDiaryAndAnalyze() {
             const { total, status } = window.currentReport || { total: 0, status: STRAIN[0] };
+            
+            if (currentItems.length > 0) {
+                diaryDatabase[selectedDateKey] = {
+                    date: selectedDateKey,
+                    items: currentItems,
+                    status: status,
+                    totalWeight: total
+                };
+            } else {
+                delete diaryDatabase[selectedDateKey];
+            }
+
+            // 현 닉네임 전용의 LocalStorage Key에 샌드박싱 저장
+            const userDbKey = `bag_fairy_diary_user_${currentUsername}`;
+            localStorage.setItem(userDbKey, JSON.stringify(diaryDatabase));
+
             document.getElementById('res-emoji').innerText = status.emoji;
             document.getElementById('res-label').innerText = status.label;
             document.getElementById('res-weight').innerText = `총 ${total.toFixed(2)}kg`;
@@ -464,10 +797,14 @@
             setTimeout(() => modal.querySelector('div').classList.remove('scale-90', 'opacity-0'), 10);
         }
 
-        function closeModal() {
+        function closeModalAndCalendar() {
             const modal = document.getElementById('result-modal');
             modal.querySelector('div').classList.add('scale-90', 'opacity-0');
-            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
+            setTimeout(() => { 
+                modal.classList.add('hidden'); 
+                modal.classList.remove('flex');
+                backToCalendar(); 
+            }, 300);
         }
     </script>
 </body>

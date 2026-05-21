@@ -174,6 +174,15 @@
         .draggable-sticker:active { cursor: grabbing; z-index: 50; }
         .draggable-sticker.dragging { opacity: 0.9; transform: scale(1.15) !important; filter: drop-shadow(0px 15px 20px rgba(0,0,0,0.2)); }
 
+        /* 주머니 드래그 시 가방 위에 띄우는 복사본 스티커 스타일 */
+        .ghost-sticker {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.9;
+            filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.25));
+        }
+
         #toast-container {
             pointer-events: none;
             z-index: 300;
@@ -198,7 +207,6 @@
                 <p class="text-xs text-slate-400 leading-normal gothic-text">※ 이전에 사용하던 닉네임을 그대로 입력하면<br>그 닉네임에 저장된 달력이 완벽히 복구됩니다!</p>
             </div>
 
-            <!-- 피드백 반영: 2px 두께 밸런스를 맞춘 두툼하고 이쁜 시작 버튼 -->
             <button onclick="saveUserAndNext()" class="w-full max-w-xs py-5 bg-[#90A4C4] hover:bg-[#75A47F] text-white rounded-[35px] font-bold text-2xl shadow-lg active:scale-95 transition-all dongle-title tracking-wider">
                 오늘의 가방 싸러가기 ✨
             </button>
@@ -452,7 +460,6 @@
             ]
         };
 
-        // 💡 피드백 반영: 더욱 찰지고 유쾌해진 페이지별 전체 50종 팩폭 코멘트 데이터 백업 연동 완료!
         const STRAIN_COMMENTS = {
             0: [
                 "가방은 사실상 등판 가리개로 쓰고 계시는군요.",
@@ -516,7 +523,6 @@
             ]
         };
 
-        // 💡 1. 지수 밸런스 황금 비율 패치 (노트북+책2개 넣으면 3~4단계로 쫀득하게 진화)
         const STRAIN = [
             { threshold: 0.5, label: '공기 축지법', emoji: '🪶', color: '#E2F9CF' },
             { threshold: 2.0, label: '요정 평화존', emoji: '🧚', color: '#CFF9E2' },
@@ -525,7 +531,6 @@
             { threshold: Infinity, label: '척추 바바이', emoji: '☠️', color: '#E9CBD1' }
         ];
 
-        // 💡 추가 개선: 누락되었던 getRandomComment 함수 정의 복원 완료!
         function getRandomComment(level) {
             const comments = STRAIN_COMMENTS[level] || STRAIN_COMMENTS[0];
             return comments[Math.floor(Math.random() * comments.length)];
@@ -708,7 +713,6 @@
             }, 300);
         }
 
-        // 상세 모달에서 수정 버튼 눌렀을 때 에디터로 진입
         function editFromDetail() {
             closeDayDetailModal();
             setTimeout(() => {
@@ -774,34 +778,137 @@
             renderStickerList();
         }
 
+        // 💡 1 & 2. 주머니 아이콘 렌더링 시 드래그 앤 드롭 이벤트를 모두 바인딩
         function renderStickerList() {
             const list = document.getElementById('sticker-list');
             list.innerHTML = '';
             let items = currentTab === 'custom' ? customStickers : PRESETS[currentTab];
             
-            items.forEach((item) => {
+            items.forEach((item, index) => {
                 const div = document.createElement('div');
-                div.className = "flex flex-col items-center gap-1 active:scale-90 transition-transform cursor-pointer w-full";
-                div.onclick = () => addStickerToCanvas(item, 25 + Math.random() * 30, 25 + Math.random() * 30);
+                div.className = "flex flex-col items-center gap-1 active:scale-95 transition-transform cursor-pointer w-full select-none";
+                
+                // 클릭/탭 시 가방 내 자동 빈자리 배치
+                div.onclick = (e) => {
+                    // 드래그 중 발생한 마우스업 클릭 오발 방어
+                    if (div.dataset.dragged === 'true') {
+                        div.dataset.dragged = 'false';
+                        return;
+                    }
+                    addStickerToCanvas(item, 25 + Math.random() * 30, 25 + Math.random() * 30);
+                };
 
                 const box = document.createElement('div');
                 box.className = "w-full aspect-square bg-[#FAF7F2] rounded-xl flex items-center justify-center text-3xl shadow-sm border border-slate-100 shrink-0";
                 
                 if (item.isCustomImage) {
-                    box.innerHTML = `<img src="${item.image}" class="w-[85%] h-[85%] object-cover rounded-full border border-slate-200">`;
+                    box.innerHTML = `<img src="${item.image}" class="w-[85%] h-[85%] object-cover rounded-full border border-slate-200" style="pointer-events:none;">`;
                 } else if (item.image) {
-                    box.innerHTML = `<img src="${item.image}" class="w-full h-full object-contain p-1">`;
+                    box.innerHTML = `<img src="${item.image}" class="w-full h-full object-contain p-1" style="pointer-events:none;">`;
                 } else {
-                    box.innerHTML = `<span class="select-none">${item.emoji}</span>`;
+                    box.innerHTML = `<span class="select-none" style="pointer-events:none;">${item.emoji}</span>`;
                 }
 
                 const name = document.createElement('p');
-                name.className = "text-[11px] font-bold text-slate-600 truncate w-full text-center gothic-text mt-0.5 leading-tight";
+                name.className = "text-[11px] font-bold text-slate-600 truncate w-full text-center gothic-text mt-0.5 leading-tight select-none";
                 name.innerText = item.name;
 
                 div.appendChild(box);
                 div.appendChild(name);
                 list.appendChild(div);
+
+                // ─── 주머니 아이템에서 가방 공간 위로 직접 드래그 앤 드롭 연동 코드 (모바일/PC 하이브리드) ───
+                let ghost = null;
+                let startX = 0, startY = 0;
+                let hasMoved = false;
+
+                const onDragStart = (e) => {
+                    hasMoved = false;
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    startX = clientX;
+                    startY = clientY;
+
+                    // 복사형 유령 드래그 요소 생성
+                    ghost = document.createElement('div');
+                    ghost.className = "ghost-sticker";
+                    ghost.style.left = `${clientX - 28}px`;
+                    ghost.style.top = `${clientY - 28}px`;
+                    
+                    if (item.isCustomImage) {
+                        ghost.innerHTML = `<img src="${item.image}" class="w-14 h-14 object-cover rounded-full border-[3px] border-white" style="pointer-events:none;">`;
+                    } else if (item.image) {
+                        ghost.innerHTML = `<img src="${item.image}" class="w-14 h-14 object-contain" style="pointer-events:none;">`;
+                    } else {
+                        ghost.innerHTML = `<span class="text-5xl" style="pointer-events:none;">${item.emoji}</span>`;
+                    }
+                    document.body.appendChild(ghost);
+
+                    if (e.touches) {
+                        window.addEventListener('touchmove', onDragMove, { passive: false });
+                        window.addEventListener('touchend', onDragEnd);
+                    } else {
+                        window.addEventListener('mousemove', onDragMove);
+                        window.addEventListener('mouseup', onDragEnd);
+                    }
+                };
+
+                const onDragMove = (e) => {
+                    if (!ghost) return;
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    
+                    if (Math.abs(clientX - startX) > 10 || Math.abs(clientY - startY) > 10) {
+                        hasMoved = true;
+                        div.dataset.dragged = 'true'; // 드래그가 일어났음을 플래그 세팅해 클릭 방지
+                    }
+
+                    if (hasMoved) {
+                        e.preventDefault(); // 스크롤 잠금
+                        ghost.style.left = `${clientX - 28}px`;
+                        ghost.style.top = `${clientY - 28}px`;
+                    }
+                };
+
+                const onDragEnd = (e) => {
+                    if (e.touches) {
+                        window.removeEventListener('touchmove', onDragMove);
+                        window.removeEventListener('touchend', onDragEnd);
+                    } else {
+                        window.removeEventListener('mousemove', onDragMove);
+                        window.removeEventListener('mouseup', onDragEnd);
+                    }
+
+                    if (!ghost) return;
+
+                    // 가방 크기/좌표 판정 영역
+                    const dropZone = document.getElementById('drop-zone');
+                    const dropRect = dropZone.getBoundingClientRect();
+                    
+                    // 마우스 오차 보완 터치업 최종 좌표 검증
+                    const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+                    const clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+
+                    // 가방 캔버스 위 영역 안으로 성공적으로 드롭되었는지 체크
+                    if (hasMoved &&
+                        clientX >= dropRect.left && clientX <= dropRect.right &&
+                        clientY >= dropRect.top && clientY <= dropRect.bottom) {
+                        
+                        // 백분율 역계산 안착 좌표
+                        const dropXPercent = ((clientX - dropRect.left - 28) / dropRect.width) * 100;
+                        const dropYPercent = ((clientY - dropRect.top - 28) / dropRect.height) * 100;
+                        
+                        addStickerToCanvas(item, dropXPercent, dropYPercent);
+                    }
+                    
+                    if (ghost) {
+                        ghost.remove();
+                        ghost = null;
+                    }
+                };
+
+                div.addEventListener('mousedown', onDragStart);
+                div.addEventListener('touchstart', onDragStart, { passive: true });
             });
         }
 
@@ -876,7 +983,6 @@
             sticker.style.top = `${yPercent}%`;
             sticker.style.transform = `rotate(${rotation}deg)`;
 
-            // 하얀색 사각박스를 치우고 오브젝트 자체 그림자만 적용
             if (item.isCustomImage) {
                 sticker.innerHTML = `<img src="${item.image}" class="w-14 h-14 object-cover rounded-full border-[3px] border-white drop-shadow-md" style="pointer-events:none;">`;
             } else if (item.image) {
@@ -898,8 +1004,10 @@
 
             if (!isRecovery) triggerBagJiggle();
 
-            // 💡 5. 극강의 모바일 터치 오클릭 방어 및 원터치 삭제 구현 코드
-            let isDragging = false, isClick = true, startX, startY, initialLeft, initialTop;
+            // 💡 3 & 4 & 5. 가방 위 배치된 스티커 탭/원클릭 삭제 & 자유로운 재드래그 분리 시스템
+            let isDragging = false;
+            let isClick = true; 
+            let startX, startY, initialLeft, initialTop;
             let touchStartTime = 0;
 
             const deleteAction = () => {
@@ -930,7 +1038,7 @@
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
                 
-                // 모바일 터치 시 미세 떨림(10px 범위)은 드래그로 치지 않고 "터치(Tap)"로 인정
+                // 10px 이상 움직이면 '드래그 이동'으로 정확하게 전환
                 if (Math.abs(clientX - startX) > 10 || Math.abs(clientY - startY) > 10) {
                     isClick = false; 
                 }
@@ -958,7 +1066,7 @@
                 
                 const touchDuration = Date.now() - touchStartTime;
 
-                // 드래그를 전혀 하지 않았거나, 터치 시간이 300ms 이내의 짧은 탭일 경우 삭제 동작 실행!
+                // 전혀 이동하지 않았거나 누르고 뗀 시간이 매우 짧다면(탭 동작) -> '원클릭 삭제'
                 if (isClick && touchDuration < 300) {
                     deleteAction();
                 } else {
@@ -985,7 +1093,6 @@
             }
         }
 
-        // 💡 2. 가방 무거워짐에 따른 표정 및 땀방울 유동적 피드백 연동
         function updateStatus() {
             const bagWrap = document.getElementById('interactive-backpack-wrap');
             const bagSvg = document.getElementById('interactive-backpack');
@@ -1018,14 +1125,13 @@
             document.getElementById('status-emoji').innerText = status.emoji;
             document.getElementById('status-label').innerText = status.label;
 
-            // 가방 팽창 공식 배율 조절 (최대 1.85배로 모바일 화면 최적화)
             const targetScale = Math.min(1.85, 1.0 + (total * 0.12));
             document.documentElement.style.setProperty('--bag-scale', targetScale.toString());
             
             if (bagWrap) bagWrap.style.transform = `scale(${targetScale})`;
 
             if (bagSvg) {
-                if (level <= 1) { // 🪶, 🧚 단계 (방긋방긋)
+                if (level <= 1) { 
                     bagSvg.style.color = "rgba(129, 140, 248, 0.25)";
                     bagFace.innerHTML = `
                         <path d="M43 68 Q45 65 47 68" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>
@@ -1033,7 +1139,7 @@
                         <path d="M48 71 Q50 74 52 71" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>
                     `;
                     if (bagSweat) { bagSweat.classList.remove('opacity-100'); bagSweat.classList.add('opacity-0'); }
-                } else if (level === 2) { // 🧱 단계 (정색)
+                } else if (level === 2) { 
                     bagSvg.style.color = "rgba(117, 164, 127, 0.35)";
                     bagFace.innerHTML = `
                         <circle cx="45" cy="68" r="2" fill="#5c554e"/>
@@ -1041,7 +1147,7 @@
                         <path d="M48 72 L52 72" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>
                     `;
                     if (bagSweat) { bagSweat.classList.remove('opacity-100'); bagSweat.classList.add('opacity-0'); }
-                } else if (level === 3) { // 🌋 단계 (찡그림 + 식은땀 💦)
+                } else if (level === 3) { 
                     bagSvg.style.color = "rgba(245, 158, 11, 0.35)";
                     bagFace.innerHTML = `
                         <path d="M43 67 L47 69" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round"/>
@@ -1051,7 +1157,7 @@
                         <path d="M48 74 Q50 72 52 74" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>
                     `;
                     if (bagSweat) { bagSweat.classList.remove('opacity-0'); bagSweat.classList.add('opacity-100'); }
-                } else { // ☠️ 단계 (완전 정지 표정 + 식은땀 💦)
+                } else { 
                     bagSvg.style.color = "rgba(239, 68, 68, 0.4)";
                     bagFace.innerHTML = `
                         <path d="M43 66 L47 70 M47 66 L43 70" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round"/>

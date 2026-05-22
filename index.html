@@ -89,6 +89,7 @@
             border-right: 2px dashed rgba(255,255,255,0.5);
         }
 
+        /* 번짐 없는 뽀얀 테두리 칼선 스티커 스타일 */
         .sticker-die-cut {
             filter: drop-shadow(2px 0px 0px #ffffff)
                     drop-shadow(-2px 0px 0px #ffffff)
@@ -141,6 +142,15 @@
         .animate-pop { animation: pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         
         .page-transition { transition: opacity 0.3s ease, transform 0.3s ease; }
+
+        @keyframes app-jiggle {
+            0% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+            100% { transform: rotate(-2deg); }
+        }
+        .edit-jiggle {
+            animation: app-jiggle 0.3s infinite;
+        }
 
         .calendar-grid-cell {
             aspect-ratio: 1;
@@ -242,7 +252,6 @@
                         <h1 class="diary-title font-bold italic text-slate-900">오늘의 가방 기록</h1>
                     </div>
                 </div>
-                <!-- PAGE 01 뱃지 삭제됨 -->
             </header>
 
             <main id="drop-zone" class="h-[43vh] min-h-[300px] notebook-canvas relative mx-4 rounded-[28px] border-4 border-white shadow-md overflow-hidden touch-none shrink-0">
@@ -282,20 +291,26 @@
                 </div>
 
                 <div class="absolute bottom-3 right-3 z-30 pointer-events-auto">
-                    <button onclick="saveDiaryAndAnalyze()" class="bg-[#90A4C4] hover:bg-[#75A47F] text-white px-5 py-2.5 rounded-2xl font-bold text-lg shadow-[0_4px_10px_rgba(144,164,196,0.4)] active:scale-95 transition-all hover:scale-102 dongle-title border-2 border-white/85">
+                    <button onclick="saveDiaryAndAnalyze()" class="bg-[#90A4C4] hover:bg-[#75A47F] text-white px-5 py-2.5 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-all dongle-title border-2 border-white/85">
                         가방 진단하기 🧚
                     </button>
                 </div>
             </main>
 
-            <div class="flex-1 bg-white mx-4 mt-3 mb-4 rounded-[28px] border-4 border-white shadow-lg p-4 flex flex-col overflow-hidden">
+            <div class="flex-1 bg-white mx-4 mt-3 mb-4 rounded-[28px] border-4 border-white shadow-lg p-4 flex flex-col overflow-hidden relative">
                 <div class="flex gap-1 bg-slate-100 p-1 rounded-xl mb-3 shrink-0">
                     <button onclick="switchTab('school')" id="tab-school" class="flex-1 py-1.5 rounded-lg font-bold text-xs bg-white shadow-sm text-[#90A4C4] transition-all gothic-text">SCHOOL</button>
                     <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 py-1.5 rounded-lg font-bold text-xs text-slate-400 transition-all gothic-text">DAILY</button>
                     <button onclick="switchTab('custom')" id="tab-custom" class="flex-1 py-1.5 rounded-lg font-bold text-xs text-slate-400 transition-all gothic-text">MY</button>
                 </div>
 
-                <div id="sticker-list" class="flex-1 overflow-y-auto custom-scrollbar grid grid-cols-4 gap-2.5 content-start"></div>
+                <div class="relative flex-1 w-full overflow-hidden flex flex-col">
+                    <div id="sticker-list" class="flex-1 overflow-y-auto custom-scrollbar grid grid-cols-4 gap-2.5 content-start pb-4"></div>
+                    
+                    <button id="edit-mode-btn" onclick="toggleEditMode()" class="hidden absolute bottom-4 right-2 w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.1)] text-lg transition-all active:scale-95 z-40">
+                        ✏️
+                    </button>
+                </div>
 
                 <div id="custom-upload-area" class="hidden mt-2 shrink-0 flex gap-2">
                     <label class="flex-1 flex flex-col items-center justify-center h-20 border-2 border-dashed border-[#90A4C4] rounded-xl bg-blue-50/30 active:bg-blue-100 cursor-pointer transition-colors">
@@ -355,6 +370,7 @@
             </div>
         </div>
 
+        <!-- 결과 진단 모달 -->
         <div id="result-modal" class="absolute inset-0 z-[210] bg-slate-900/60 backdrop-blur-md hidden items-center justify-center p-6">
             <div class="bg-white w-full max-w-sm rounded-[45px] border-[8px] border-white shadow-2xl p-8 space-y-6 scale-90 opacity-0 transition-all">
                 <div id="capture-card" class="bg-[#FAF7F2] rounded-[30px] p-6 border-2 border-dashed border-slate-200 text-center space-y-5">
@@ -372,22 +388,20 @@
                     <div class="text-[10px] text-slate-300 font-mono tracking-widest uppercase">My Bag Fairy Studio</div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="downloadCardImage()" class="py-4 bg-[#75A47F] hover:bg-green-700 text-white rounded-[24px] font-bold text-xl dongle-title active:scale-95 transition-all shadow-md">이미지 저장하기 💾</button>
-                    <button onclick="closeModalAndCalendar()" class="py-4 bg-[#90A4C4] hover:bg-indigo-500 text-white rounded-[24px] font-bold text-xl dongle-title active:scale-95 transition-all shadow-md">달력에 기록하기 📝</button>
+                <!-- 💡 '이미지 저장하기'를 없애고 '달력에 기록하기' 단일 버튼 구조로 변경하여 한층 가독성 높게 조정 -->
+                <div class="w-full">
+                    <button onclick="closeModalAndCalendar()" class="w-full py-4.5 bg-[#90A4C4] hover:bg-indigo-500 text-white rounded-[24px] font-bold text-xl dongle-title active:scale-95 transition-all shadow-md">달력에 기록하기 📝</button>
                 </div>
             </div>
         </div>
 
-        <div id="toast-container" class="absolute bottom-10 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-800/90 text-white rounded-full text-xs font-bold shadow-md opacity-0 transition-opacity duration-300 gothic-text whitespace-nowrap"></div>
+        <div id="toast-container" class="absolute bottom-10 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-800/90 text-white rounded-full text-xs font-bold shadow-md opacity-0 transition-opacity duration-300 gothic-text whitespace-nowrap z-[400]"></div>
 
     </div>
 
     <script>
-        // --- 🤖 [API 설정 영역] 실제 누끼 따기를 원하신다면 여기에 무료 remove.bg API 키를 넣으세요! ---
-        const REMOVE_BG_API_KEY = ""; // 예: "Q1w2e3r4T5y6u7I8o9P0..."
-        // -------------------------------------------------------------------------------------------------
-
+        const REMOVE_BG_API_KEY = ""; 
+        
         let currentItems = [];
         let customStickers = [];
         let currentTab = 'school';
@@ -396,8 +410,8 @@
         let calendarDate = new Date(); 
         let currentUsername = "";
         let diaryDatabase = {};
+        let isEditMode = false;
 
-        // 💡 ImgBB 호스팅 실사 이미지 완벽 매핑
         const PRESETS = {
             school: [
                 { name: '노트북', weight: 1.5, emoji: '💻', image: "https://i.ibb.co/0pP4LCzp/laptop1.png" }, 
@@ -422,66 +436,11 @@
         };
 
         const STRAIN_COMMENTS = {
-            0: [
-                "가방은 사실상 등판 가리개로 쓰고 계시는군요.",
-                "거북목보다 스마트폰 배터리 떨어지는 게 더 위협적인 상태네요.",
-                "혹시 중요한 거 다 두고 온 건 아니겠죠?",
-                "미니멀리스트라 쓰고 준비성 없음이라 읽는 법이죠.",
-                "오늘은 인류의 기술 문명과 무관하게 살기로 했군요.",
-                "오늘 하루만큼은 지구 중력과 사이가 참 좋네요.",
-                "욕심을 좀 가져보는 건 어때요? 뭐라도 좀 넣어보시죠...",
-                "어깨가 오늘 처음으로 존재감을 잃었군요. 좋은 의미로요.",
-                "가방이 공중 부양하려고 하네요. 유의하시길 바라요.",
-                "엄마가 잘 모르셔서 그렇지 요새는 다 이렇게 가방 매요."
-            ],
-            1: [
-                "어깨는 아직 괜찮은 모양이군요. 아마도요... 아마...",
-                "사회가 요구하는 최소한의 성실함을 장착한 상태군요.",
-                "아직 어깨가 웃고 있네요. 그 미소, 오래가길 바랄게요.",
-                "이 정도면 도수치료비는 굳었다고 봐도 되겠네요.",
-                "아직 어깨가 주인님께 미소를 지어주고 있네요.",
-                "어깨: '음, 이 정도면 할 만하네요.'",
-                "어깨는 아직까지 협조적이네요. 아직까지는 말이죠.",
-                "가방 무게 GREEN GREEN",
-                "가방 속에 미래가 담겨있군요. 납처럼 무겁진 않지만 가볍지도 않네요.",
-                "와, 너 정말 평균을 지켰어."
-            ],
-            2: [
-                "노트북이랑 전공책이 가방 안에서 기싸움 중이군요. 묵직하네요.",
-                "슬슬 승모근이 자기주장을 시작하고 있네요.",
-                "인생의 무게를 가방에 다 담으셨나 봐요. 무겁네요.",
-                "어깨는 이미 파업 준비 중인 것 같군요.",
-                "어깨: '이건 좀.’",
-                "지금부터는 걷는 속도가 0.8배속으로 느려질 거예요.",
-                "필요한 것만 챙겼는데, 필요한 게 이렇게 많을 줄은 몰랐겠네요.",
-                "무게를 느끼면서도 멈추지 않는 것, 이게 바로 젊음이죠.",
-                "오늘 가방은 제2의 자아네요. 무겁고 아주 지쳐있음.",
-                "걸어 다니는 인간 덤벨이군요. 근육 발달에는 확실히 도움 되겠네요."
-            ],
-            3: [
-                "어깨 전용 파스를 미리 사뒀기를 간절히 바랄게요.",
-                "이 정도면 가방이 아니라 지옥에서 온 봇짐이네요.",
-                "지나가던 물리치료사가 나를 보고 명함을 꺼낼 수준이군요.",
-                "가방 지퍼가 닫혔다는 사실이 오늘의 기적이네요. 참 기특하군요.",
-                "운동 안 해도 괜찮겠어요. 등교 자체가 데드리프트니까요.",
-                "내가 가방을 드는 건지 가방이 나를 끌고 가는 건지 불분명하네요.",
-                "가방이 당신을 거의 집어삼킨 수준이군요.",
-                "이 가방이 자서전이라면 챕터 하나는 척추에게 헌정해야겠네요.",
-                "근처에 있는 도수치료 병원을 좀 찾아드릴까요?",
-                "어깨소리가 안 들리나요? 불쌍한 어깨의 외마디 비명입니다..."
-            ],
-            4: [
-                "어깨가 이미 이 몸을 떠났군요. 영적으로요.",
-                "이건 가방이 아니라 이동식 열람실이네요.",
-                "척추가 이미 은퇴 계획을 세우고 있는 게 분명하네요.",
-                "이 가방 메고 계단을 올라가면 그건 등교가 아니라 등반이죠.",
-                "축하드려요! 오늘 도수치료사님의 매출 1등 공신으로 선정되셨네요.",
-                "오늘 당신의 가방은 웬만한 초등학생보다 무겁군요.",
-                "당신의 미래가 이 가방보다 가볍길 진심으로 기도할게요. 🙏",
-                "가방 안에 가방이 또 들어있는 건 아니겠죠? 의심스럽네요.",
-                "가방 속에 전공책 대신 '미련'을 가득 채우셨나요? 지독하시네요 정말.",
-                "이 가방의 무게를 아는 사람: ☠️☠️☠️☠️"
-            ]
+            0: ["가방은 사실상 등판 가리개로 쓰고 계시는군요.", "거북목보다 스마트폰 배터리 떨어지는 게 더 위협적인 상태네요.", "혹시 중요한 거 다 두고 온 건 아니겠죠?", "미니멀리스트라 쓰고 준비성 없음이라 읽는 법이죠.", "오늘은 인류의 기술 문명과 무관하게 살기로 했군요.", "오늘 하루만큼은 지구 중력과 사이가 참 좋네요.", "욕심을 좀 가져보는 건 어때요? 뭐라도 좀 넣어보시죠...", "어깨가 오늘 처음으로 존재감을 잃었군요. 좋은 의미로요.", "가방이 공중 부양하려고 하네요. 유의하시길 바라요.", "엄마가 잘 모르셔서 그렇지 요새는 다 이렇게 가방 매요."],
+            1: ["어깨는 아직 괜찮은 모양이군요. 아마도요... 아마...", "사회가 요구하는 최소한의 성실함을 장착한 상태군요.", "아직 어깨가 웃고 있네요. 그 미소, 오래가길 바랄게요.", "이 정도면 도수치료비는 굳었다고 봐도 되겠네요.", "아직 어깨가 주인님께 미소를 지어주고 있네요.", "어깨: '음, 이 정도면 할 만하네요.'", "어깨는 아직까지 협조적이네요. 아직까지는 말이죠.", "가방 무게 GREEN GREEN", "가방 속에 미래가 담겨있군요. 납처럼 무겁진 않지만 가볍지도 않네요.", "와, 너 정말 평균을 지켰어."],
+            2: ["노트북이랑 전공책이 가방 안에서 기싸움 중이군요. 묵직하네요.", "슬슬 승모근이 자기주장을 시작하고 있네요.", "인생의 무게를 가방에 다 담으셨나 봐요. 무겁네요.", "어깨는 이미 파업 준비 중인 것 같군요.", "어깨: '이건 좀.’", "지금부터는 걷는 속도가 0.8배속으로 느려질 거예요.", "필요한 것만 챙겼는데, 필요한 게 이렇게 많을 줄은 몰랐겠네요.", "무게를 느끼면서도 멈추지 않는 것, 이게 바로 젊음이죠.", "오늘 가방은 제2의 자아네요. 무겁고 아주 지쳐있음.", "걸어 다니는 인간 덤벨이군요. 근육 발달에는 확실히 도움 되겠네요."],
+            3: ["어깨 전용 파스를 미리 사뒀기를 간절히 바랄게요.", "이 정도면 가방이 아니라 지옥에서 온 봇짐이네요.", "지나가던 물리치료사가 나를 보고 명함을 꺼낼 수준이군요.", "가방 지퍼가 닫혔다는 사실이 오늘의 기적이네요. 참 기특하군요.", "운동 안 해도 괜찮겠어요. 등교 자체가 데드리프트니까요.", "내가 가방을 드는 건지 가방이 나를 끌고 가는 건지 불분명하네요.", "가방이 당신을 거의 집어삼킨 수준이군요.", "이 가방이 자서전이라면 챕터 하나는 척추에게 헌정해야겠네요.", "근처에 있는 도수치료 병원을 좀 찾아드릴까요?", "어깨소리가 안 들리나요? 불쌍한 어깨의 외마디 비명입니다..."],
+            4: ["어깨가 이미 이 몸을 떠났군요. 영적으로요.", "이건 가방이 아니라 이동식 열람실이네요.", "척추가 이미 은퇴 계획을 세우고 있는 게 분명하네요.", "이 가방 메고 계단을 올라가면 그건 등교가 아니라 등반이죠.", "축하드려요! 오늘 도수치료사님의 매출 1등 공신으로 선정되셨네요.", "오늘 당신의 가방은 웬만한 초등학생보다 무겁군요.", "당신의 미래가 이 가방보다 가볍길 진심으로 기도할게요. 🙏", "가방 안에 가방이 또 들어있는 건 아니겠죠? 의심스럽네요.", "가방 속에 전공책 대신 '미련'을 가득 채우셨나요? 지독하시네요 정말.", "이 가방의 무게를 아는 사람: ☠️☠️☠️☠️"]
         };
 
         const STRAIN = [
@@ -609,19 +568,52 @@
 
         function switchTab(tab) {
             currentTab = tab;
+            isEditMode = false;
+            
             ['school', 'daily', 'custom'].forEach(t => {
                 document.getElementById(`tab-${t}`).className = (t === tab) 
-                    ? "flex-1 py-1.5 rounded-lg font-bold text-xs bg-[#E2F9CF] text-[#75A47F] shadow-sm gothic-text"
-                    : "flex-1 py-1.5 rounded-lg font-bold text-xs text-slate-400 gothic-text";
+                    ? "flex-1 py-1.5 rounded-lg font-bold text-xs bg-[#E2F9CF] text-[#75A47F] shadow-sm transition-all gothic-text"
+                    : "flex-1 py-1.5 rounded-lg font-bold text-xs text-slate-400 transition-all gothic-text";
             });
             document.getElementById('custom-upload-area').className = (tab === 'custom') ? "flex mt-2 shrink-0 gap-2" : "hidden";
             renderStickerList();
         }
 
-        // 💡 모든 이미지가 다이컷 효과와 함께 잘리지 않도록 (object-contain) 통일
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('edit-mode-btn');
+            btn.innerHTML = isEditMode ? '✅' : '✏️';
+            if(isEditMode) {
+                btn.classList.add('bg-green-100', 'text-green-700');
+            } else {
+                btn.classList.remove('bg-green-100', 'text-green-700');
+            }
+            renderStickerList();
+        }
+
+        function deleteCustomSticker(idx) {
+            if(confirm("이 스티커를 정말로 삭제하시겠습니까?")) {
+                customStickers.splice(idx, 1);
+                if(customStickers.length === 0) {
+                    isEditMode = false;
+                    document.getElementById('edit-mode-btn').innerHTML = '✏️';
+                    document.getElementById('edit-mode-btn').classList.remove('bg-green-100', 'text-green-700');
+                }
+                renderStickerList();
+            }
+        }
+
+        function renameCustomSticker(idx) {
+            const newName = prompt("아이템의 새로운 이름을 입력하세요:", customStickers[idx].name);
+            if(newName !== null && newName.trim() !== "") {
+                customStickers[idx].name = newName.trim();
+                renderStickerList();
+            }
+        }
+
         function createStickerHTML(item, sizeClass = "text-3xl") {
             if (item.image && item.image.trim() !== "") {
-                return `<img src="${item.image}" class="w-full h-full object-contain p-1.5 sticker-die-cut" style="pointer-events:none;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                return `<img src="${item.image}" crossorigin="anonymous" class="w-full h-full object-contain p-1.5 sticker-die-cut" style="pointer-events:none;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                         <span class="hidden ${sizeClass} sticker-die-cut" style="pointer-events:none;">${item.emoji}</span>`;
             } else {
                 return `<span class="${sizeClass} sticker-die-cut" style="pointer-events:none;">${item.emoji}</span>`;
@@ -633,94 +625,143 @@
             list.innerHTML = '';
             let items = currentTab === 'custom' ? customStickers : PRESETS[currentTab];
             
-            items.forEach((item) => {
+            const editBtn = document.getElementById('edit-mode-btn');
+            if (currentTab === 'custom' && customStickers.length > 0) {
+                editBtn.classList.remove('hidden');
+            } else {
+                editBtn.classList.add('hidden');
+                isEditMode = false;
+                editBtn.innerHTML = '✏️';
+                editBtn.classList.remove('bg-green-100', 'text-green-700');
+            }
+
+            items.forEach((item, index) => {
                 const div = document.createElement('div');
-                div.className = "flex flex-col items-center gap-1 cursor-pointer w-full select-none active:scale-95 transition-transform";
-                div.onclick = (e) => {
-                    if (div.dataset.dragged === 'true') {
-                        div.dataset.dragged = 'false';
-                        return;
-                    }
-                    addStickerToCanvas(item, 25 + Math.random() * 30, 25 + Math.random() * 30);
-                };
+                div.className = "flex flex-col items-center gap-1 w-full select-none relative";
+                
+                if (isEditMode && currentTab === 'custom') {
+                    div.classList.add('edit-jiggle');
+                } else {
+                    div.classList.add('active:scale-95', 'transition-transform', 'cursor-pointer');
+                    div.onclick = (e) => {
+                        if (div.dataset.dragged === 'true') {
+                            div.dataset.dragged = 'false';
+                            return;
+                        }
+                        addStickerToCanvas(item, 25 + Math.random() * 30, 25 + Math.random() * 30);
+                    };
+                }
 
                 const box = document.createElement('div');
-                box.className = "w-full aspect-square bg-[#FAF7F2] rounded-xl flex items-center justify-center shadow-sm border border-slate-100 overflow-hidden";
+                box.className = "relative w-full aspect-square bg-[#FAF7F2] rounded-xl flex items-center justify-center shadow-sm border border-slate-100 shrink-0 overflow-hidden";
                 
-                box.innerHTML = createStickerHTML(item, "text-3xl");
+                if (isEditMode && currentTab === 'custom') {
+                    const delBadge = document.createElement('div');
+                    delBadge.className = "absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-md cursor-pointer z-20 hover:scale-110";
+                    delBadge.innerHTML = "✕";
+                    delBadge.onclick = (e) => {
+                        e.stopPropagation();
+                        deleteCustomSticker(index);
+                    };
+                    box.appendChild(delBadge);
+                }
+
+                const imgWrap = document.createElement('div');
+                imgWrap.className = "w-full h-full flex items-center justify-center";
+                if (item.isCustomImage) {
+                    imgWrap.innerHTML = `<img src="${item.image}" crossorigin="anonymous" class="w-[85%] h-[85%] object-cover rounded-full border border-slate-200" style="pointer-events:none;">`;
+                } else {
+                    imgWrap.innerHTML = createStickerHTML(item, "text-3xl");
+                }
+                box.appendChild(imgWrap);
 
                 const name = document.createElement('p');
                 name.className = "text-[11px] font-bold text-slate-600 truncate w-full text-center gothic-text mt-0.5 leading-tight select-none";
                 name.innerText = item.name;
 
-                div.appendChild(box); div.appendChild(name); list.appendChild(div);
+                if (isEditMode && currentTab === 'custom') {
+                    name.classList.add('bg-slate-200', 'rounded', 'px-1', 'py-0.5', 'cursor-pointer', 'hover:bg-slate-300');
+                    name.onclick = (e) => {
+                        e.stopPropagation();
+                        renameCustomSticker(index);
+                    };
+                }
 
-                let ghost = null;
-                let startX = 0, startY = 0;
-                let hasMoved = false;
+                div.appendChild(box); 
+                div.appendChild(name); 
+                list.appendChild(div);
 
-                const onDragStart = (e) => {
-                    hasMoved = false;
-                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                    startX = clientX; startY = clientY;
+                if (!isEditMode) {
+                    let ghost = null;
+                    let startX = 0, startY = 0;
+                    let hasMoved = false;
 
-                    ghost = document.createElement('div');
-                    ghost.className = "ghost-sticker w-14 h-14";
-                    ghost.style.left = `${clientX - 28}px`; ghost.style.top = `${clientY - 28}px`;
-                    
-                    ghost.innerHTML = createStickerHTML(item, "text-5xl");
-                    document.body.appendChild(ghost);
+                    const onDragStart = (e) => {
+                        hasMoved = false;
+                        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                        startX = clientX; startY = clientY;
 
-                    if (e.touches) {
-                        window.addEventListener('touchmove', onDragMove, { passive: false });
-                        window.addEventListener('touchend', onDragEnd);
-                    } else {
-                        window.addEventListener('mousemove', onDragMove);
-                        window.addEventListener('mouseup', onDragEnd);
-                    }
-                };
-
-                const onDragMove = (e) => {
-                    if (!ghost) return;
-                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                    if (Math.abs(clientX - startX) > 10 || Math.abs(clientY - startY) > 10) {
-                        hasMoved = true; div.dataset.dragged = 'true';
-                    }
-                    if (hasMoved) {
-                        e.preventDefault();
+                        ghost = document.createElement('div');
+                        ghost.className = "ghost-sticker w-14 h-14";
                         ghost.style.left = `${clientX - 28}px`; ghost.style.top = `${clientY - 28}px`;
-                    }
-                };
+                        
+                        if (item.isCustomImage) {
+                            ghost.innerHTML = `<img src="${item.image}" crossorigin="anonymous" class="w-14 h-14 object-cover rounded-full border-[3px] border-white drop-shadow-md" style="pointer-events:none;">`;
+                        } else {
+                            ghost.innerHTML = createStickerHTML(item, "text-5xl");
+                        }
+                        document.body.appendChild(ghost);
 
-                const onDragEnd = (e) => {
-                    if (e.touches) {
-                        window.removeEventListener('touchmove', onDragMove); window.removeEventListener('touchend', onDragEnd);
-                    } else {
-                        window.removeEventListener('mousemove', onDragMove); window.removeEventListener('mouseup', onDragEnd);
-                    }
-                    if (!ghost) return;
+                        if (e.touches) {
+                            window.addEventListener('touchmove', onDragMove, { passive: false });
+                            window.addEventListener('touchend', onDragEnd);
+                        } else {
+                            window.addEventListener('mousemove', onDragMove);
+                            window.addEventListener('mouseup', onDragEnd);
+                        }
+                    };
 
-                    const dropZone = document.getElementById('drop-zone');
-                    const dropRect = dropZone.getBoundingClientRect();
-                    const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
-                    const clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+                    const onDragMove = (e) => {
+                        if (!ghost) return;
+                        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                        if (Math.abs(clientX - startX) > 10 || Math.abs(clientY - startY) > 10) {
+                            hasMoved = true; div.dataset.dragged = 'true';
+                        }
+                        if (hasMoved) {
+                            e.preventDefault();
+                            ghost.style.left = `${clientX - 28}px`; ghost.style.top = `${clientY - 28}px`;
+                        }
+                    };
 
-                    if (hasMoved && clientX >= dropRect.left && clientX <= dropRect.right && clientY >= dropRect.top && clientY <= dropRect.bottom) {
-                        const dropXPercent = ((clientX - dropRect.left - 28) / dropRect.width) * 100;
-                        const dropYPercent = ((clientY - dropRect.top - 28) / dropRect.height) * 100;
-                        addStickerToCanvas(item, dropXPercent, dropYPercent);
-                    }
-                    if (ghost) { ghost.remove(); ghost = null; }
-                };
+                    const onDragEnd = (e) => {
+                        if (e.touches) {
+                            window.removeEventListener('touchmove', onDragMove); window.removeEventListener('touchend', onDragEnd);
+                        } else {
+                            window.removeEventListener('mousemove', onDragMove); window.removeEventListener('mouseup', onDragEnd);
+                        }
+                        if (!ghost) return;
 
-                div.addEventListener('mousedown', onDragStart);
-                div.addEventListener('touchstart', onDragStart, { passive: true });
+                        const dropZone = document.getElementById('drop-zone');
+                        const dropRect = dropZone.getBoundingClientRect();
+                        const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+                        const clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+
+                        if (hasMoved && clientX >= dropRect.left && clientX <= dropRect.right && clientY >= dropRect.top && clientY <= dropRect.bottom) {
+                            const dropXPercent = ((clientX - dropRect.left - 28) / dropRect.width) * 100;
+                            const dropYPercent = ((clientY - dropRect.top - 28) / dropRect.height) * 100;
+                            addStickerToCanvas(item, dropXPercent, dropYPercent);
+                        }
+                        if (ghost) { ghost.remove(); ghost = null; }
+                    };
+
+                    div.addEventListener('mousedown', onDragStart);
+                    div.addEventListener('touchstart', onDragStart, { passive: true });
+                }
             });
         }
 
-        // 💡 API 연동을 통한 누끼 따기 + 혹은 잘림 방지 로컬 뷰어 플로우 통합
         async function handleCustomUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -759,7 +800,6 @@
                 }
             }
 
-            // API 키가 없거나 실패 시 원본 이미지 그대로 렌더링 (object-contain으로 잘리지 않게 설정됨)
             const reader = new FileReader();
             reader.onload = function(event) {
                 setTimeout(() => {
@@ -778,7 +818,7 @@
 
         function openCustomNameModal(item) {
             document.getElementById('preview-custom-img').innerHTML = item.image 
-                ? `<img src="${item.image}" class="w-[85%] h-[85%] object-contain sticker-die-cut">` 
+                ? `<img src="${item.image}" crossorigin="anonymous" class="w-[85%] h-[85%] object-cover rounded-full border-4 border-white drop-shadow-md">` 
                 : `<span class="text-6xl">${item.emoji}</span>`;
             document.getElementById('custom-name-input').value = "";
             
@@ -819,7 +859,13 @@
             sticker.style.top = `${yPercent}%`;
             sticker.style.transform = `rotate(${rotation}deg)`;
 
-            sticker.innerHTML = createStickerHTML(item, "text-5xl");
+            if (item.isCustomImage) {
+                sticker.innerHTML = `<img src="${item.image}" crossorigin="anonymous" class="w-14 h-14 object-cover rounded-full border-[3px] border-white drop-shadow-md" style="pointer-events:none;">`;
+            } else if (item.image) {
+                sticker.innerHTML = `<img src="${item.image}" crossorigin="anonymous" class="w-14 h-14 object-contain sticker-die-cut" style="pointer-events:none;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"><span class="hidden text-5xl sticker-die-cut" style="pointer-events:none;">${item.emoji}</span>`;
+            } else {
+                sticker.innerHTML = `<span class="text-5xl select-none sticker-die-cut" style="pointer-events:none;">${item.emoji}</span>`;
+            }
 
             const label = document.createElement('span');
             label.className = "sticker-label shadow-sm absolute -bottom-5 left-1/2 transform -translate-x-1/2";
@@ -977,6 +1023,7 @@
             document.getElementById('res-emoji').innerText = status.emoji;
             document.getElementById('res-label').innerText = status.label;
             document.getElementById('res-comment').innerText = `"${getRandomComment(level)}"`;
+            document.getElementById('card-date').innerText = selectedDateKey.replace(/-/g, '.');
 
             const modal = document.getElementById('result-modal');
             modal.classList.remove('hidden'); modal.classList.add('flex');
@@ -999,7 +1046,7 @@
                 
                 let visualEl = '';
                 if (item.image) {
-                    visualEl = `<img src="${item.image}" class="w-10 h-10 object-contain sticker-die-cut">`;
+                    visualEl = `<img src="${item.image}" crossorigin="anonymous" class="w-10 h-10 object-contain sticker-die-cut">`;
                 } else {
                     visualEl = `<span class="sticker-die-cut text-2xl">${item.emoji}</span>`;
                 }
@@ -1021,13 +1068,6 @@
         }
 
         function editFromDetail() { closeDayDetailModal(); setTimeout(() => openEditorForDate(selectedDateKey), 300); }
-
-        function downloadCardImage() {
-            const toast = document.getElementById('toast-container');
-            toast.innerText = "💾 진단결과가 데이터 문서로 저장되었습니다!";
-            toast.style.opacity = "1";
-            setTimeout(() => toast.style.opacity = "0", 2500);
-        }
 
         function closeModalAndCalendar() {
             const modal = document.getElementById('result-modal');

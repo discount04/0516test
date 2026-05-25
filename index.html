@@ -1,20 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6N6KHDDNJQ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-6N6KHDDNJQ');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6N6KHDDNJQ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-6N6KHDDNJQ');
+    </script>
     
-
-    
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>가방 요정 스티커북</title>
@@ -23,14 +18,15 @@
     <style>
         * { box-sizing: border-box; }
 
+        /* 전달받은 파스텔 무드의 컬러 팔레트 적용 */
         :root {
             --main-font: 'Dongle', sans-serif;
             --gothic-font: 'IBM Plex Sans KR', sans-serif;
-            --color-light-green: #E2F9CF;
-            --color-sage-green: #75A47F;
-            --color-slate-blue: #90A4C4;
-            --color-muted-pink: #EC9EC0;
-            --color-cream: #FAF7F2;
+            --color-light-green: #DDF8CD;
+            --color-sage-green: #5C9E6A;
+            --color-slate-blue: #8AA2C7;
+            --color-muted-pink: #FA86C4;
+            --color-cream: #FCF5EC;
             --bag-scale: 1.0;
         }
 
@@ -103,7 +99,7 @@
             border-right: 2px dashed rgba(255,255,255,0.5);
         }
 
-        /* 번짐 없는 뽀얀 테두리 칼선 스티커 스타일 */
+        /* 흰색 다이컷 칼선 스티커 스타일 필터 */
         .sticker-die-cut {
             filter: drop-shadow(2px 0px 0px #ffffff)
                     drop-shadow(-2px 0px 0px #ffffff)
@@ -162,9 +158,7 @@
             50% { transform: rotate(2deg); }
             100% { transform: rotate(-2deg); }
         }
-        .edit-jiggle {
-            animation: app-jiggle 0.3s infinite;
-        }
+        .edit-jiggle { animation: app-jiggle 0.3s infinite; }
 
         .calendar-grid-cell {
             aspect-ratio: 1;
@@ -200,82 +194,91 @@
     </style>
 </head>
 <body>
-    
 
     <div id="app-shell">
 
-        <!-- 랜딩 페이지 -->
-        <div id="landing-page" class="absolute inset-0 z-[200] bg-[#FAF7F2] flex flex-col items-center justify-center p-8 text-center page-transition">
+        <!-- 1. 랜딩 페이지 -->
+        <div id="landing-page" class="absolute inset-0 z-[200] bg-[var(--color-cream)] flex flex-col items-center justify-center p-8 text-center page-transition">
             <div class="mb-4 animate-float">
                 <div class="text-[100px] leading-none mb-2 select-none">🧚</div>
-                <div class="inline-block bg-[#E2F9CF] text-[#75A47F] px-4 py-1 rounded-full font-bold text-sm tracking-widest uppercase gothic-text">My Bag Fairy</div>
+                <div class="inline-block bg-[var(--color-light-green)] text-[var(--color-sage-green)] px-4 py-1 rounded-full font-bold text-sm tracking-widest uppercase gothic-text">My Bag Fairy</div>
             </div>
-            <h1 class="text-6xl font-bold italic mb-6 leading-none">가방 요정<br><span class="text-[#90A4C4] underline decoration-[#EC9EC0] decoration-4">기록장</span></h1>
+            <h1 class="text-6xl font-bold italic mb-6 leading-none dongle-title">가방 요정<br><span class="text-[var(--color-slate-blue)] underline decoration-[var(--color-muted-pink)] decoration-4">기록장</span></h1>
             
-            <div class="w-full max-w-xs space-y-4 mb-10">
-                <input type="text" id="username-input" placeholder="귀여운 닉네임을 적어줘!" maxlength="10" 
-                       class="w-full px-6 py-4 bg-white border-2 border-[#E2F9CF] rounded-[20px] text-center font-bold text-lg focus:outline-none focus:border-[#90A4C4] transition-all shadow-inner">
+            <!-- 입력 상자 글씨 밀착 정렬 반영 -->
+            <div class="w-full max-w-xs space-y-2 mb-6 flex flex-col items-center">
+                <input type="text" id="username-input" placeholder="나만의 닉네임" maxlength="10" 
+                       class="w-full px-4 py-2.5 bg-white border-2 border-[var(--color-light-green)] rounded-xl text-center font-bold text-sm focus:outline-none focus:border-[var(--color-slate-blue)] transition-all shadow-inner gothic-text tracking-normal">
+                <input type="password" id="pin-input" placeholder="비밀번호 4자리 (숫자)" maxlength="4" pattern="[0-9]*" inputmode="numeric"
+                       class="w-full px-4 py-2.5 bg-white border-2 border-[var(--color-light-green)] rounded-xl text-center font-bold text-sm focus:outline-none focus:border-[var(--color-slate-blue)] transition-all shadow-inner gothic-text tracking-normal">
             </div>
 
-            <button onclick="saveUserAndNext()" class="w-full max-w-xs py-5 bg-[#90A4C4] hover:bg-[#75A47F] text-white rounded-[35px] font-bold text-2xl shadow-lg active:scale-95 transition-all dongle-title tracking-wider">
-                오늘의 가방 싸러가기 ✨
+            <!-- 💡 버튼 패딩 조정(py-3) 및 글자 크기 축소(text-lg) 적용하여 부담스럽지 않고 깔끔하게 연출 -->
+            <button id="start-btn" onclick="saveUserAndNext()" class="w-full max-w-xs py-3 bg-[var(--color-slate-blue)] hover:bg-[var(--color-sage-green)] text-white rounded-full font-bold text-lg shadow-md active:translate-y-1 transition-all gothic-text tracking-wider flex items-center justify-center gap-2">
+                <span>오늘의 가방 싸러가기 ✨</span>
             </button>
         </div>
 
-        <!-- 캘린더 아카이브 페이지 -->
-        <div id="calendar-view" class="absolute inset-0 z-[150] bg-[#FAF7F2] flex flex-col page-transition hidden">
-            <header class="p-6 flex justify-between items-center shrink-0">
+        <!-- 2. 캘린더 아카이브 페이지 -->
+        <div id="calendar-view" class="absolute inset-0 z-[150] bg-[var(--color-cream)] flex flex-col page-transition hidden">
+            <!-- 홈 화면 헤더와 완벽히 대칭되는 패딩과 배치 설정 (p-5, items-center) -->
+            <header class="p-5 flex justify-between items-center shrink-0">
                 <div>
-                    <span id="user-welcome-title" class="text-[#75A47F] font-bold text-xs tracking-wider gothic-text">안녕하세요!</span>
-                    <h2 class="text-4xl font-bold italic text-slate-900 leading-none">나의 요정 달력</h2>
+                    <span id="user-welcome-title" class="text-[var(--color-sage-green)] font-bold text-xs tracking-wider gothic-text">안녕하세요!</span>
+                    <h2 class="text-4xl font-bold italic text-slate-900 leading-none dongle-title">나의 요정 달력</h2>
                 </div>
-                <div onclick="resetNickname()" class="p-2.5 bg-white rounded-xl border border-slate-200/60 shadow-sm text-xs text-slate-400 font-bold gothic-text cursor-pointer">이름 수정</div>
+                
+                <!-- 홈 바로가기 버튼 규격과 위치를 홈화면 캘린더 버튼과 100% 동일하게 일치시킴 -->
+                <button onclick="backToMainApp()" class="p-2.5 bg-white border border-slate-100 rounded-xl text-[var(--color-slate-blue)] shadow-sm active:scale-95 transition-all flex items-center justify-center" title="홈으로">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </button>
             </header>
 
-            <div class="flex-1 bg-white mx-4 mb-24 rounded-[35px] border-4 border-white shadow-xl p-5 flex flex-col overflow-hidden">
+            <div class="flex-1 bg-white mx-4 mb-8 rounded-[35px] border-4 border-white shadow-xl p-5 flex flex-col overflow-hidden">
                 <div class="flex justify-between items-center mb-6 px-2 shrink-0">
-                    <button onclick="prevMonth()" class="text-2xl font-bold p-2 text-[#75A47F]">&lt;</button>
-                    <h3 id="calendar-month-year" class="text-4xl font-bold text-slate-800">2026년 5월</h3>
-                    <button onclick="nextMonth()" class="text-2xl font-bold p-2 text-[#75A47F]">&gt;</button>
+                    <button onclick="prevMonth()" class="text-2xl font-bold p-2 text-[var(--color-sage-green)]">&lt;</button>
+                    <h3 id="calendar-month-year" class="text-4xl font-bold text-slate-800 dongle-title">2026년 5월</h3>
+                    <button onclick="nextMonth()" class="text-2xl font-bold p-2 text-[var(--color-sage-green)]">&gt;</button>
                 </div>
                 <div class="grid grid-cols-7 gap-1 text-center font-bold text-slate-300 text-xs mb-4 uppercase tracking-wider gothic-text">
                     <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
                 </div>
-                <div id="calendar-days" class="grid grid-cols-7 gap-2 flex-1 overflow-y-auto custom-scrollbar"></div>
-            </div>
-
-            <div class="absolute bottom-0 left-0 right-0 p-4 z-[90]">
-                <div class="max-w-md mx-auto bg-[#90A4C4] p-4 rounded-[30px] shadow-2xl flex items-center justify-between text-white border-2 border-white/20">
-                    <div class="flex items-center gap-3">
-                        <span class="text-3xl">📝</span>
-                        <span class="text-sm font-bold gothic-text leading-tight text-white">오늘도 등교 완료!<br>새로운 가방을 기록해보세요</span>
-                    </div>
-                    <button onclick="openEditorForDate(getTodayDateKey())" class="px-4 py-2.5 bg-white text-[#90A4C4] rounded-xl font-bold text-xs shadow-lg gothic-text whitespace-nowrap shrink-0 active:scale-95">기록장 쓰기</button>
-                </div>
+                <div id="calendar-days" class="grid grid-cols-7 gap-2 flex-1 overflow-y-auto custom-scrollbar content-start"></div>
             </div>
         </div>
 
-        <!-- 메인 가방 구성 페이지 -->
+        <!-- 3. 메인 가방 구성 페이지 (홈 화면) -->
         <div id="main-app" class="absolute inset-0 opacity-0 pointer-events-none page-transition transform translate-y-10 hidden flex flex-col overflow-hidden">
-            <header class="p-4 flex justify-between items-start z-10 shrink-0">
+            <!-- 캘린더 헤더와 완벽히 대칭되는 패딩과 배치 설정 (p-5, items-center) -->
+            <header class="p-5 flex justify-between items-center z-10 shrink-0">
                 <div class="flex items-center gap-3">
-                    <button onclick="backToCalendar()" class="p-2.5 bg-white border border-slate-100 rounded-xl text-slate-400 shadow-sm active:scale-95 transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    </button>
-                    <div class="flex flex-col">
-                        <span id="editor-date-title" class="text-[#75A47F] font-bold text-[10px] tracking-widest gothic-text">2026.05.22</span>
-                        <h1 class="diary-title font-bold italic text-slate-900">오늘의 가방 기록</h1>
+                    <div class="flex flex-col ml-1">
+                        <span id="editor-date-title" class="text-[var(--color-sage-green)] font-bold text-[10px] tracking-widest gothic-text">2026.05.22</span>
+                        <h1 class="diary-title font-bold italic text-slate-900 dongle-title">오늘의 가방 기록</h1>
                     </div>
                 </div>
+                
+                <!-- 캘린더 버튼 규격과 위치가 캘린더 화면의 홈버튼과 100% 동일한 좌표를 가짐 -->
+                <button onclick="goToCalendar()" class="p-2.5 bg-white border border-slate-100 rounded-xl text-[var(--color-slate-blue)] shadow-sm active:scale-95 transition-all flex items-center justify-center" title="달력 보기">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </button>
             </header>
 
-            <main id="drop-zone" class="h-[43vh] min-h-[300px] notebook-canvas relative mx-4 rounded-[28px] border-4 border-white shadow-md overflow-hidden touch-none shrink-0">
+            <main id="drop-zone" class="h-[35vh] min-h-[250px] notebook-canvas relative mx-4 rounded-[28px] border-4 border-white shadow-md overflow-hidden touch-none shrink-0">
                 <div id="empty-msg" class="absolute inset-0 flex flex-col items-center justify-center opacity-25 pointer-events-none z-10">
-                    <p class="text-xl font-bold italic text-gray-400">아래 주머니에서 물건을 꺼내 채워주세요!</p>
+                    <p class="text-xl font-bold italic text-gray-400 dongle-title">아래 주머니에서 물건을 꺼내주세요!</p>
                 </div>
                 
                 <div id="interactive-backpack-wrap" class="absolute inset-0 flex items-center justify-center pointer-events-none transition-all duration-300 origin-center">
-                    <svg id="interactive-backpack" class="text-indigo-400/25 w-48 h-48 transition-colors drop-shadow-[0_12px_24px_rgba(0,0,0,0.08)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg id="interactive-backpack" class="text-indigo-400/25 w-40 h-40 transition-colors drop-shadow-[0_12px_24px_rgba(0,0,0,0.08)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M38 20 C38 12, 62 12, 62 20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
                         <path d="M30 24 C20 30, 20 70, 30 80 M70 24 C80 30, 80 70, 70 80" stroke="currentColor" stroke-width="6" opacity="0.3" stroke-linecap="round"/>
                         <path d="M26 32 C26 18, 74 18, 74 32 C74 48, 72 82, 68 86 C64 90, 36 90, 32 86 C28 82, 26 48, 26 32 Z" fill="currentColor"/>
@@ -298,55 +301,71 @@
 
                 <div id="sticker-container" class="absolute inset-0 z-20"></div>
 
-                <div class="absolute top-3 right-3 z-30 pointer-events-none">
-                    <div class="bg-[#FAF7F2] border-2 border-dashed border-[#cbd5e1] px-4 py-1.5 rounded-xl shadow-[2px_4px_8px_rgba(0,0,0,0.05)] flex items-center gap-1.5">
-                        <span id="status-emoji" class="text-lg">🧚</span>
-                        <span id="status-label" class="text-xs font-bold text-slate-500 gothic-text">가뿐한 출발</span>
+                <!-- 💡 디폴트 이모지를 🪶(깃털)로 세련되게 변경해 시각적인 부조화를 해결 -->
+                <div class="absolute top-4 left-5 z-30 pointer-events-none">
+                    <div class="flex items-center gap-2 drop-shadow-md">
+                        <span id="status-emoji" class="text-4xl">🪶</span>
+                        <span id="status-label" class="text-xl font-black text-slate-800 gothic-text tracking-tight" style="text-shadow: 0px 2px 4px rgba(255, 255, 255, 0.9), 0px 0px 2px rgba(255, 255, 255, 1), 0px 0px 10px rgba(255, 255, 255, 1);">깃털 가벼움</span>
                     </div>
                 </div>
 
-                <div class="absolute bottom-3 right-3 z-30 pointer-events-auto">
-                    <button onclick="saveDiaryAndAnalyze()" class="bg-[#90A4C4] hover:bg-[#75A47F] text-white px-5 py-2.5 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-all dongle-title border-2 border-white/85">
-                        가방 진단하기 🧚
+                <!-- 🔄 새로고침 버튼 상단 우측 고정 -->
+                <div class="absolute top-4 right-4 z-30 pointer-events-auto">
+                    <button onclick="clearAllItems()" class="bg-white/90 backdrop-blur-md hover:bg-slate-100 text-slate-500 p-2.5 rounded-full shadow-md active:scale-95 transition-all border border-slate-200 flex items-center justify-center" title="새로고침(모두 비우기)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="absolute bottom-4 right-4 z-30 pointer-events-auto">
+                    <button onclick="saveDiaryAndAnalyze()" class="bg-[var(--color-slate-blue)] hover:bg-[var(--color-sage-green)] text-white px-6 py-3 rounded-2xl font-bold text-xl shadow-[0_4px_10px_rgba(0,0,0,0.2)] active:scale-95 transition-all dongle-title border-2 border-white/85">
+                        진단하기 🧚
                     </button>
                 </div>
             </main>
 
-            <div class="flex-1 bg-white mx-4 mt-3 mb-4 rounded-[28px] border-4 border-white shadow-lg p-4 flex flex-col overflow-hidden relative">
-                <div class="flex gap-1 bg-slate-100 p-1 rounded-xl mb-3 shrink-0">
-                    <button onclick="switchTab('school')" id="tab-school" class="flex-1 py-1.5 rounded-lg font-bold text-xs bg-white shadow-sm text-[#90A4C4] transition-all gothic-text">SCHOOL</button>
+            <!-- 하단 주머니 공간 -->
+            <div class="flex-1 bg-white mx-4 mt-3 mb-4 rounded-[28px] border-4 border-white shadow-lg p-3 flex flex-col overflow-hidden relative">
+                <div class="flex gap-1 bg-slate-100 p-1 rounded-xl mb-2 shrink-0">
+                    <button onclick="switchTab('school')" id="tab-school" class="flex-1 py-1.5 rounded-lg font-bold text-xs bg-[var(--color-light-green)] text-[var(--color-sage-green)] shadow-sm transition-all gothic-text">SCHOOL</button>
                     <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 py-1.5 rounded-lg font-bold text-xs text-slate-400 transition-all gothic-text">DAILY</button>
                     <button onclick="switchTab('custom')" id="tab-custom" class="flex-1 py-1.5 rounded-lg font-bold text-xs text-slate-400 transition-all gothic-text">MY</button>
                 </div>
 
-                <div class="relative flex-1 w-full overflow-hidden flex flex-col">
-                    <div id="sticker-list" class="flex-1 overflow-y-auto custom-scrollbar grid grid-cols-4 gap-2.5 content-start pb-4"></div>
+                <!-- 부모 Grid를 col-4로 고정하여 절대 찌그러지지 않고 크기를 가두어 둠 -->
+                <div class="relative flex-1 w-full overflow-hidden flex flex-col pt-1">
+                    <div id="sticker-list" class="flex-1 grid grid-cols-4 gap-x-3 gap-y-4 overflow-y-auto custom-scrollbar pb-3 px-1 content-start"></div>
                     
-                    <button id="edit-mode-btn" onclick="toggleEditMode()" class="hidden absolute bottom-4 right-2 w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.1)] text-lg transition-all active:scale-95 z-40">
-                        ✏️
+                    <!-- 편집 모드 플로팅 아이콘 -->
+                    <button id="edit-mode-btn" onclick="toggleEditMode()" class="hidden absolute bottom-3 right-1 w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-lg text-slate-500 transition-all active:scale-95 z-40">
+                        <svg id="icon-pencil" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        <svg id="icon-check" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="hidden text-[var(--color-sage-green)]"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </button>
                 </div>
 
-                <div id="custom-upload-area" class="hidden mt-2 shrink-0 flex gap-2">
-                    <label class="flex-1 flex flex-col items-center justify-center h-20 border-2 border-dashed border-[#90A4C4] rounded-xl bg-blue-50/30 active:bg-blue-100 cursor-pointer transition-colors">
+                <div id="custom-upload-area" class="hidden mt-2 shrink-0 flex gap-2 pt-2 border-t border-slate-100">
+                    <label class="flex-1 flex flex-col items-center justify-center h-14 border border-dashed border-[var(--color-slate-blue)] rounded-xl bg-blue-50/20 active:bg-blue-100 cursor-pointer transition-colors">
                         <input type="file" class="hidden" accept="image/*" capture="environment" onchange="handleCustomUpload(event)">
-                        <span class="text-2xl mb-1 drop-shadow-sm">📸</span>
-                        <p class="text-[11px] font-bold text-[#90A4C4] gothic-text">카메라 촬영</p>
+                        <span class="text-lg mb-0.5">📸</span>
+                        <p class="text-[10px] font-bold text-[var(--color-slate-blue)] gothic-text">카메라</p>
                     </label>
-                    <label class="flex-1 flex flex-col items-center justify-center h-20 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 active:bg-slate-100 cursor-pointer transition-colors">
+                    <label class="flex-1 flex flex-col items-center justify-center h-14 border border-dashed border-slate-200 rounded-xl bg-slate-50 active:bg-slate-100 cursor-pointer transition-colors">
                         <input type="file" class="hidden" accept="image/*" onchange="handleCustomUpload(event)">
-                        <span class="text-2xl mb-1 opacity-80">🖼️</span>
-                        <p class="text-[11px] font-bold text-slate-400 gothic-text">갤러리 선택</p>
+                        <span class="text-lg mb-0.5 opacity-80">🖼️</span>
+                        <p class="text-[10px] font-bold text-slate-400 gothic-text">갤러리</p>
                     </label>
                 </div>
                 
-                <div id="upload-loading" class="hidden mt-2 items-center justify-center h-20 w-full bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
-                    <div class="animate-spin rounded-full h-6 w-6 border-2 border-[#90A4C4] border-t-transparent"></div>
-                    <span class="ml-2 text-xs font-bold text-slate-400 gothic-text">AI 요정이 배경을 지우는 중... ✂️</span>
+                <div id="upload-loading" class="hidden mt-2 items-center justify-center h-14 w-full bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                    <div class="animate-spin rounded-full h-4 w-4 border-2 border-[var(--color-slate-blue)] border-t-transparent"></div>
+                    <span class="ml-2 text-[10px] font-bold text-slate-400 gothic-text">AI 배경 지우는 중... ✂️</span>
                 </div>
             </div>
         </div>
 
+        <!-- 일별 디테일 모달 -->
         <div id="day-detail-modal" class="absolute inset-0 z-[250] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-6 opacity-0 transition-opacity duration-300">
             <div class="bg-[#FAF7F2] w-full max-w-[320px] rounded-[35px] border-4 border-white shadow-2xl flex flex-col overflow-hidden transform scale-95 transition-transform duration-300 max-h-[80vh]">
                 <div class="p-6 bg-white border-b-2 border-dashed border-slate-200 flex flex-col items-center shrink-0">
@@ -354,8 +373,8 @@
                         <p id="detail-date" class="text-xs text-slate-400 font-bold gothic-text uppercase tracking-widest">2026.05.22</p>
                         <button onclick="closeDayDetailModal()" class="w-8 h-8 flex items-center justify-center text-slate-400 bg-slate-100 rounded-full font-bold">✕</button>
                     </div>
-                    <div id="detail-emoji" class="text-6xl bg-[#E2F9CF] p-4 rounded-3xl mb-2 shadow-inner">🧚</div>
-                    <h3 id="detail-label" class="text-3xl font-bold italic text-slate-800 leading-none">가뿐한 요정</h3>
+                    <div id="detail-emoji" class="text-6xl bg-[#E2F9CF] p-4 rounded-3xl mb-2 shadow-inner">🪶</div>
+                    <h3 id="detail-label" class="text-3xl font-bold italic text-slate-800 leading-none dongle-title">깃털 가벼움</h3>
                 </div>
                 <div class="flex-1 overflow-y-auto p-5 bg-[#FAF7F2] custom-scrollbar">
                     <div class="flex justify-center mb-4">
@@ -369,50 +388,181 @@
             </div>
         </div>
 
+        <!-- 커스텀 아이템 이름 모달 -->
         <div id="custom-name-modal" class="absolute inset-0 z-[300] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-6 opacity-0 transition-opacity duration-300">
-            <div class="bg-[#FAF7F2] w-full max-w-[280px] rounded-[35px] border-4 border-white shadow-2xl p-6 flex flex-col items-center transform scale-95 transition-transform">
+            <div class="bg-[var(--color-cream)] w-full max-w-[280px] rounded-[35px] border-4 border-white shadow-2xl p-6 flex flex-col items-center transform scale-95 transition-transform">
                 <h3 class="text-3xl font-bold italic mb-1 text-slate-800 dongle-title">이름을 지어주세요!</h3>
                 <p class="text-[10px] text-slate-400 gothic-text mb-5">요정이 누끼 딴 짐에 이름을 적어주세요! 🧚</p>
                 
                 <div id="preview-custom-img" class="w-24 h-24 flex items-center justify-center mb-5 drop-shadow-md"></div>
                 
-                <input type="text" id="custom-name-input" placeholder="내 짐 (예: 애착인형)" class="w-full bg-white px-4 py-3 rounded-xl text-center font-bold text-sm mb-5 border-2 border-slate-100 focus:outline-none focus:border-[#90A4C4] gothic-text shadow-inner text-slate-700">
+                <input type="text" id="custom-name-input" placeholder="내 짐 (예: 애착인형)" class="w-full bg-white px-4 py-3 rounded-xl text-center font-bold text-sm mb-5 border-2 border-slate-100 focus:outline-none focus:border-[var(--color-slate-blue)] gothic-text shadow-inner text-slate-700">
                 
                 <div class="w-full flex gap-2">
                     <button onclick="closeCustomNameModal()" class="flex-1 py-2.5 bg-slate-200 text-slate-600 hover:bg-slate-300 rounded-[15px] font-bold text-lg dongle-title">취소</button>
-                    <button onclick="saveCustomSticker()" class="flex-1 py-2.5 bg-[#90A4C4] hover:bg-[#75A47F] text-white rounded-[15px] font-bold text-lg active:scale-95 transition-colors dongle-title">가방에 넣기 ✨</button>
+                    <button onclick="saveCustomSticker()" class="flex-1 py-2.5 bg-[var(--color-slate-blue)] hover:bg-[var(--color-sage-green)] text-white rounded-[15px] font-bold text-lg active:scale-95 transition-colors dongle-title">가방에 넣기 ✨</button>
                 </div>
             </div>
         </div>
 
-        <!-- 결과 진단 모달 -->
+        <!-- 디자인 레퍼런스 포스터 무드의 결과 진단 카드 모달 -->
         <div id="result-modal" class="absolute inset-0 z-[210] bg-slate-900/60 backdrop-blur-md hidden items-center justify-center p-6">
-            <div class="bg-white w-full max-w-sm rounded-[45px] border-[8px] border-white shadow-2xl p-8 space-y-6 scale-90 opacity-0 transition-all">
-                <div id="capture-card" class="bg-[#FAF7F2] rounded-[30px] p-6 border-2 border-dashed border-slate-200 text-center space-y-5">
-                    <div class="flex justify-between items-center px-1">
-                        <span class="text-xs text-slate-400 font-bold tracking-wider uppercase gothic-text">Fairy Diagnosis</span>
-                        <span id="card-date" class="text-xs text-slate-400 font-bold gothic-text">2026.05.22</span>
+            <div class="w-full max-w-sm flex flex-col items-center justify-center transform scale-90 opacity-0 transition-all duration-300 gap-4">
+                
+                <!-- 캡처될 포스터 디자인 카드 영역 -->
+                <div id="capture-card" class="w-full bg-[var(--color-cream)] border-[3px] border-[var(--color-slate-blue)] rounded-[32px] overflow-hidden relative shadow-[8px_8px_0_0_var(--color-slate-blue)] flex flex-col">
+                    
+                    <!-- 헤더 타이틀 띠 -->
+                    <div class="bg-[var(--color-slate-blue)] text-white px-5 py-3 flex justify-between items-center border-b-[3px] border-[var(--color-slate-blue)] shrink-0">
+                        <span class="text-[13px] font-black tracking-widest uppercase gothic-text">My Bag Fairy</span>
+                        <span id="card-date" class="text-[11px] font-bold gothic-text opacity-90">2026.05.22</span>
                     </div>
-                    <div class="space-y-2">
-                        <div id="res-emoji" class="text-8xl p-4 bg-white inline-block rounded-[35px] border-4 border-white shadow-sm">🧚</div>
-                        <h4 id="res-label" class="text-4xl font-bold italic text-slate-900">가뿐한 요정</h4>
+                    
+                    <!-- 카드 중앙 콘텐츠 영역 -->
+                    <div class="flex-1 flex flex-col items-center justify-center p-6 pt-8 pb-8 relative">
+                        <!-- 데코레이션 요소 -->
+                        <div class="absolute top-5 left-5 text-3xl opacity-20">✨</div>
+                        <div class="absolute top-12 right-6 text-2xl opacity-20">☁️</div>
+
+                        <!-- 요정이 완벽히 카드 박스 정중앙에 배치되도록 교정 -->
+                        <div class="w-[125px] h-[125px] rounded-full bg-[var(--color-light-green)] border-[3px] border-[var(--color-sage-green)] flex items-center justify-center text-7xl shadow-[4px_4px_0_0_var(--color-sage-green)] z-10 mb-6 shrink-0 relative">
+                            <span id="res-emoji" class="transform hover:scale-110 transition-transform">🪶</span>
+                        </div>
+                        
+                        <!-- 가방 상태 명칭 -->
+                        <h4 id="res-label" class="text-[42px] font-bold italic text-[var(--color-slate-blue)] dongle-title leading-none mb-6 drop-shadow-sm shrink-0">깃털 가벼움</h4>
+                        
+                        <!-- 진단 코멘트 (팝업 스타일) -->
+                        <div class="w-full bg-white border-[3px] border-[var(--color-muted-pink)] rounded-[20px] p-5 shadow-[4px_4px_0_0_var(--color-muted-pink)] relative shrink-0">
+                            <!-- 말풍선 꼬리 -->
+                            <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t-[3px] border-l-[3px] border-[var(--color-muted-pink)] transform rotate-45"></div>
+                            <p id="res-comment" class="text-lg font-bold text-[var(--color-muted-pink)] leading-snug break-keep gothic-text text-center">"가방이 텅 비었어요!"</p>
+                        </div>
                     </div>
-                    <div class="p-5 bg-white rounded-[24px] border-2 border-[#E2F9CF]">
-                        <p id="res-comment" class="text-lg font-semibold text-[#75A47F] leading-tight break-keep gothic-text">"가방이 텅 비었어요!"</p>
-                    </div>
-                    <div class="text-[10px] text-slate-300 font-mono tracking-widest uppercase">My Bag Fairy Studio</div>
                 </div>
 
-                <!-- 💡 '이미지 저장하기'를 없애고 '달력에 기록하기' 단일 버튼 구조로 변경하여 한층 가독성 높게 조정 -->
-                <div class="w-full">
-                    <button onclick="closeModalAndCalendar()" class="w-full py-4.5 bg-[#90A4C4] hover:bg-indigo-500 text-white rounded-[24px] font-bold text-xl dongle-title active:scale-95 transition-all shadow-md">달력에 기록하기 📝</button>
+                <!-- 날씬하게 정돈된 달력 기록하기 버튼 -->
+                <div class="w-full px-1">
+                    <button onclick="closeModalAndCalendar()" class="w-full py-3.5 bg-[var(--color-sage-green)] hover:bg-green-700 text-white rounded-full font-bold text-2xl dongle-title active:translate-y-1 active:shadow-none transition-all shadow-[0_4px_0_0_#3d7a49] border border-white/20 tracking-wider">
+                        달력에 기록하기 📝
+                    </button>
                 </div>
             </div>
         </div>
-
-        <div id="toast-container" class="absolute bottom-10 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-800/90 text-white rounded-full text-xs font-bold shadow-md opacity-0 transition-opacity duration-300 gothic-text whitespace-nowrap z-[400]"></div>
 
     </div>
+
+    <!-- Firebase SDK 연동 모듈 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3kS5rZRe4_mbrXsoM_rdQ-Ea5Y-lC400",
+            authDomain: "my-bag-fairy.firebaseapp.com",
+            projectId: "my-bag-fairy",
+            storageBucket: "my-bag-fairy.firebasestorage.app",
+            messagingSenderId: "28216222415",
+            appId: "1:28216222415:web:aa70e0e6782b77b211cdba",
+            measurementId: "G-PSZ7N7L211" 
+        };
+
+        const hasValidConfig = firebaseConfig && 
+                             firebaseConfig.apiKey && 
+                             firebaseConfig.apiKey !== "" && 
+                             !firebaseConfig.apiKey.includes("YOUR_FIREBASE_CONFIG_HERE");
+
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        let isFirebaseEnabled = false;
+        let appId = firebaseConfig.appId;
+
+        if (hasValidConfig) {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                isFirebaseEnabled = true;
+
+                const initAuth = async () => {
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (e) {
+                        console.warn("Firebase Auth Fail (Fallback to Local):", e);
+                        isFirebaseEnabled = false;
+                    }
+                };
+                initAuth();
+
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                });
+            } catch (e) {
+                console.error("Firebase Init Fail:", e);
+                isFirebaseEnabled = false;
+            }
+        }
+
+        window.FBDiary = {
+            async loadUser(username, pin) {
+                if (!isFirebaseEnabled || !currentUser) {
+                    const savedDb = localStorage.getItem(`bag_fairy_diary_user_${username}`);
+                    return savedDb ? JSON.parse(savedDb) : {};
+                }
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists() && docSnap.data().pin === pin) {
+                        return docSnap.data().diaryDatabase || {};
+                    }
+                } catch (e) { console.error(e); }
+                return {};
+            },
+            async checkUserExists(username) {
+                if (!isFirebaseEnabled || !currentUser) {
+                    return localStorage.getItem(`bag_fairy_diary_user_${username}`) ? true : false;
+                }
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) return { exists: true, pin: docSnap.data().pin };
+                    return { exists: false };
+                } catch (e) { console.error(e); }
+                return { exists: false };
+            },
+            async saveUser(username, pin, diaryDatabase) {
+                localStorage.setItem(`bag_fairy_diary_user_${username}`, JSON.stringify(diaryDatabase));
+                localStorage.setItem(`bag_fairy_pin_${username}`, pin);
+                if (!isFirebaseEnabled || !currentUser) return;
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username);
+                    await setDoc(docRef, { 
+                        username: username, 
+                        pin: pin,
+                        diaryDatabase: diaryDatabase, 
+                        updated_at: new Date().toISOString() 
+                    }, { merge: true });
+                } catch (e) { console.error(e); }
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedName = localStorage.getItem('bag_fairy_username');
+            const savedPin = localStorage.getItem(`bag_fairy_pin_${savedName}`);
+            if (savedName && savedPin) {
+                document.getElementById('username-input').value = savedName;
+                document.getElementById('pin-input').value = savedPin;
+                document.getElementById('landing-page').style.display = 'none';
+                loadUserDatabase(savedName, savedPin);
+            }
+        });
+    </script>
 
     <script>
         const REMOVE_BG_API_KEY = ""; 
@@ -424,6 +574,7 @@
         let selectedDateKey = ""; 
         let calendarDate = new Date(); 
         let currentUsername = "";
+        let currentPin = "";
         let diaryDatabase = {};
         let isEditMode = false;
 
@@ -451,19 +602,20 @@
         };
 
         const STRAIN_COMMENTS = {
-            0: ["가방은 사실상 등판 가리개로 쓰고 계시는군요.", "거북목보다 스마트폰 배터리 떨어지는 게 더 위협적인 상태네요.", "혹시 중요한 거 다 두고 온 건 아니겠죠?", "미니멀리스트라 쓰고 준비성 없음이라 읽는 법이죠.", "오늘은 인류의 기술 문명과 무관하게 살기로 했군요.", "오늘 하루만큼은 지구 중력과 사이가 참 좋네요.", "욕심을 좀 가져보는 건 어때요? 뭐라도 좀 넣어보시죠...", "어깨가 오늘 처음으로 존재감을 잃었군요. 좋은 의미로요.", "가방이 공중 부양하려고 하네요. 유의하시길 바라요.", "엄마가 잘 모르셔서 그렇지 요새는 다 이렇게 가방 매요."],
-            1: ["어깨는 아직 괜찮은 모양이군요. 아마도요... 아마...", "사회가 요구하는 최소한의 성실함을 장착한 상태군요.", "아직 어깨가 웃고 있네요. 그 미소, 오래가길 바랄게요.", "이 정도면 도수치료비는 굳었다고 봐도 되겠네요.", "아직 어깨가 주인님께 미소를 지어주고 있네요.", "어깨: '음, 이 정도면 할 만하네요.'", "어깨는 아직까지 협조적이네요. 아직까지는 말이죠.", "가방 무게 GREEN GREEN", "가방 속에 미래가 담겨있군요. 납처럼 무겁진 않지만 가볍지도 않네요.", "와, 너 정말 평균을 지켰어."],
-            2: ["노트북이랑 전공책이 가방 안에서 기싸움 중이군요. 묵직하네요.", "슬슬 승모근이 자기주장을 시작하고 있네요.", "인생의 무게를 가방에 다 담으셨나 봐요. 무겁네요.", "어깨는 이미 파업 준비 중인 것 같군요.", "어깨: '이건 좀.’", "지금부터는 걷는 속도가 0.8배속으로 느려질 거예요.", "필요한 것만 챙겼는데, 필요한 게 이렇게 많을 줄은 몰랐겠네요.", "무게를 느끼면서도 멈추지 않는 것, 이게 바로 젊음이죠.", "오늘 가방은 제2의 자아네요. 무겁고 아주 지쳐있음.", "걸어 다니는 인간 덤벨이군요. 근육 발달에는 확실히 도움 되겠네요."],
-            3: ["어깨 전용 파스를 미리 사뒀기를 간절히 바랄게요.", "이 정도면 가방이 아니라 지옥에서 온 봇짐이네요.", "지나가던 물리치료사가 나를 보고 명함을 꺼낼 수준이군요.", "가방 지퍼가 닫혔다는 사실이 오늘의 기적이네요. 참 기특하군요.", "운동 안 해도 괜찮겠어요. 등교 자체가 데드리프트니까요.", "내가 가방을 드는 건지 가방이 나를 끌고 가는 건지 불분명하네요.", "가방이 당신을 거의 집어삼킨 수준이군요.", "이 가방이 자서전이라면 챕터 하나는 척추에게 헌정해야겠네요.", "근처에 있는 도수치료 병원을 좀 찾아드릴까요?", "어깨소리가 안 들리나요? 불쌍한 어깨의 외마디 비명입니다..."],
-            4: ["어깨가 이미 이 몸을 떠났군요. 영적으로요.", "이건 가방이 아니라 이동식 열람실이네요.", "척추가 이미 은퇴 계획을 세우고 있는 게 분명하네요.", "이 가방 메고 계단을 올라가면 그건 등교가 아니라 등반이죠.", "축하드려요! 오늘 도수치료사님의 매출 1등 공신으로 선정되셨네요.", "오늘 당신의 가방은 웬만한 초등학생보다 무겁군요.", "당신의 미래가 이 가방보다 가볍길 진심으로 기도할게요. 🙏", "가방 안에 가방이 또 들어있는 건 아니겠죠? 의심스럽네요.", "가방 속에 전공책 대신 '미련'을 가득 채우셨나요? 지독하시네요 정말.", "이 가방의 무게를 아는 사람: ☠️☠️☠️☠️"]
+            0: ["가방은 사실상 등판 가리개로 쓰고 계시는군요.", "미니멀리스트라 쓰고 준비성 없음이라 읽는 법이죠.", "오늘 하루만큼은 지구 중력과 사이가 참 좋네요."],
+            1: ["사회가 요구하는 최소한의 성실함을 장착한 상태군요.", "아직 어깨가 웃고 있네요. 그 미소, 오래가길 바랄게요.", "와, 너 정말 평균을 지켰어."],
+            2: ["노트북이랑 전공책이 가방 안에서 기싸움 중이군요.", "슬슬 승모근이 자기주장을 시작하고 있네요.", "필요한 것만 챙겼는데 이렇게 많을 줄은 몰랐겠네요."],
+            3: ["어깨 전용 파스를 미리 사뒀기를 간절히 바랄게요.", "이 정도면 가방이 아니라 지옥에서 온 봇짐이네요.", "어깨소리가 안 들리나요? 불쌍한 어깨의 외마디 비명입니다..."],
+            4: ["어깨가 이미 이 몸을 떠났군요. 영적으로요.", "이건 가방이 아니라 이동식 열람실이네요.", "가방 속에 전공책 대신 '미련'을 가득 채우셨나요? 지독하시네요."]
         };
 
+        // 💡 단계 명칭 개편 및 Level 4 도달 허들 간격(3.2 ➔ 2.8, 4.8 ➔ 4.2) 최적화 단축 
         const STRAIN = [
-            { threshold: 0.5, label: '공기 축지법', emoji: '🪶', color: '#E2F9CF' },
-            { threshold: 2.0, label: '요정 평화존', emoji: '🧚', color: '#CFF9E2' },
-            { threshold: 4.0, label: '돌덩이 수송', emoji: '🧱', color: '#FAEFC2' },
-            { threshold: 6.0, label: '승모근 화산', emoji: '🌋', color: '#F9D4CF' },
-            { threshold: Infinity, label: '척추 바바이', emoji: '☠️', color: '#E9CBD1' }
+            { threshold: 0.5, label: '깃털 가벼움', emoji: '🪶', color: '#DDF8CD' },
+            { threshold: 1.8, label: '요정 평화존', emoji: '🧚', color: '#DDF8CD' },
+            { threshold: 2.8, label: '돌덩이 수송', emoji: '🧱', color: '#5C9E6A' },
+            { threshold: 4.2, label: '승모근 화산', emoji: '🌋', color: '#FA86C4' },
+            { threshold: Infinity, label: '어깨 붕괴 경보', emoji: '☠️', color: '#8AA2C7' }
         ];
 
         function getRandomComment(level) {
@@ -471,36 +623,74 @@
             return comments[Math.floor(Math.random() * comments.length)];
         }
 
-        window.onload = function() {
-            const savedName = localStorage.getItem('bag_fairy_username');
-            if (savedName) {
-                document.getElementById('username-input').value = savedName;
-                document.getElementById('landing-page').style.display = 'none';
-                loadUserDatabase(savedName);
-            }
-        };
-
-        function loadUserDatabase(username) {
+        async function loadUserDatabase(username, pin) {
             currentUsername = username;
-            const savedDb = localStorage.getItem(`bag_fairy_diary_user_${username}`);
-            diaryDatabase = savedDb ? JSON.parse(savedDb) : {};
-            openEditorForDate(getTodayDateKey());
+            currentPin = pin;
+            try {
+                if (window.FBDiary) {
+                    diaryDatabase = await window.FBDiary.loadUser(username, pin);
+                } else {
+                    const savedDb = localStorage.getItem(`bag_fairy_diary_user_${username}`);
+                    diaryDatabase = savedDb ? JSON.parse(savedDb) : {};
+                }
+                if (window.gtag) gtag('event', 'login', { method: 'Nickname', username: username });
+                
+                openEditorForDate(getTodayDateKey());
+            } catch (error) {
+                console.error("데이터베이스 불러오기 실패:", error);
+                openEditorForDate(getTodayDateKey());
+            }
         }
 
-        function saveUserAndNext() {
+        async function saveUserAndNext() {
             const inputName = document.getElementById('username-input').value.trim();
-            if (!inputName) return alert("닉네임을 적어줘!");
-            localStorage.setItem('bag_fairy_username', inputName);
-            document.getElementById('landing-page').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('landing-page').style.display = 'none';
-                loadUserDatabase(inputName);
-            }, 300);
-        }
+            const inputPin = document.getElementById('pin-input').value.trim();
+            
+            if (!inputName || !inputPin) return alert("닉네임과 4자리 비밀번호(PIN)를 모두 입력해줘!");
+            if (inputPin.length !== 4) return alert("비밀번호(PIN)는 꼭 4자리로 입력해줘!");
+            
+            const startBtn = document.getElementById('start-btn');
+            startBtn.disabled = true; startBtn.innerHTML = "<span>요정에게 물어보는 중... 🧚</span>";
 
-        function resetNickname() {
-            localStorage.removeItem('bag_fairy_username');
-            location.reload();
+            try {
+                const hasDiaryHelper = window.FBDiary && typeof window.FBDiary.checkUserExists === 'function';
+                let result = { exists: false };
+                
+                if (hasDiaryHelper) {
+                    result = await window.FBDiary.checkUserExists(inputName);
+                } else {
+                    const savedDb = localStorage.getItem(`bag_fairy_diary_user_${inputName}`);
+                    const savedPin = localStorage.getItem(`bag_fairy_pin_${inputName}`);
+                    result = savedDb ? { exists: true, pin: savedPin } : { exists: false };
+                }
+
+                if (result.exists) {
+                    if (result.pin !== inputPin) {
+                        alert("⚠️ 이미 사용 중인 닉네임이거나 비밀번호(PIN)가 틀렸어!");
+                        startBtn.disabled = false; startBtn.innerHTML = "<span>오늘의 가방 싸러가기 ✨</span>";
+                        return;
+                    }
+                } else {
+                    if (hasDiaryHelper) await window.FBDiary.saveUser(inputName, inputPin, {});
+                    else {
+                        localStorage.setItem(`bag_fairy_diary_user_${inputName}`, JSON.stringify({}));
+                        localStorage.setItem(`bag_fairy_pin_${inputName}`, inputPin);
+                    }
+                }
+
+                localStorage.setItem('bag_fairy_username', inputName);
+                localStorage.setItem(`bag_fairy_pin_${inputName}`, inputPin);
+                
+                document.getElementById('landing-page').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('landing-page').style.display = 'none';
+                    loadUserDatabase(inputName, inputPin);
+                }, 300);
+
+            } catch(e) {
+                alert("네트워크 통신 오류가 발생했습니다. 다시 시도해 주세요.");
+                startBtn.disabled = false; startBtn.innerHTML = "<span>오늘의 가방 싸러가기 ✨</span>";
+            }
         }
 
         function getTodayDateKey() {
@@ -508,12 +698,21 @@
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         }
 
-        function showCalendarView(username) {
-            document.getElementById('user-welcome-title').innerText = `어깨 수호단 ${username}님`;
+        function goToCalendar() {
+            document.getElementById('main-app').classList.add('hidden');
             const calView = document.getElementById('calendar-view');
             calView.classList.remove('hidden');
             setTimeout(() => { calView.style.opacity = '1'; }, 50);
             renderCalendar();
+            if (window.gtag) gtag('event', 'screen_view', { app_name: 'BagFairy', screen_name: 'CalendarView' });
+        }
+        
+        function backToMainApp() {
+            document.getElementById('calendar-view').style.opacity = '0';
+            setTimeout(() => { 
+                document.getElementById('calendar-view').classList.add('hidden'); 
+                openEditorForDate(getTodayDateKey());
+            }, 300);
         }
 
         function renderCalendar() {
@@ -526,9 +725,7 @@
             const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
             const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-            for (let i = 0; i < firstDayIndex; i++) {
-                daysContainer.appendChild(document.createElement('div'));
-            }
+            for (let i = 0; i < firstDayIndex; i++) daysContainer.appendChild(document.createElement('div'));
 
             for (let day = 1; day <= lastDay; day++) {
                 const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -537,8 +734,7 @@
                 
                 const num = document.createElement('span');
                 num.className = "absolute top-2 left-3 font-bold text-xs text-slate-400 gothic-text";
-                num.innerText = day;
-                cell.appendChild(num);
+                num.innerText = day; cell.appendChild(num);
 
                 if (diaryDatabase[dateKey]) {
                     const stamp = document.createElement('div');
@@ -547,7 +743,7 @@
                     stamp.innerText = diaryDatabase[dateKey].status.emoji;
                     cell.appendChild(stamp);
                 }
-                if (dateKey === getTodayDateKey()) cell.classList.add("ring-2", "ring-[#90A4C4]");
+                if (dateKey === getTodayDateKey()) cell.classList.add("ring-2", "ring-[var(--color-slate-blue)]");
                 cell.onclick = () => diaryDatabase[dateKey] ? openDayDetailModal(dateKey) : openEditorForDate(dateKey);
                 daysContainer.appendChild(cell);
             }
@@ -556,12 +752,27 @@
         function prevMonth() { calendarDate.setMonth(calendarDate.getMonth() - 1); renderCalendar(); }
         function nextMonth() { calendarDate.setMonth(calendarDate.getMonth() + 1); renderCalendar(); }
 
+        function clearAllItems() {
+            currentItems.forEach(item => {
+                const el = document.getElementById(`sticker-${item.id}`);
+                if (el) el.remove();
+            });
+            currentItems = [];
+            document.getElementById('empty-msg').style.display = 'flex';
+            updateStatus();
+            triggerBagJiggle();
+        }
+
         function openEditorForDate(dateKey) {
             selectedDateKey = dateKey;
             document.getElementById('sticker-container').innerHTML = '';
             currentItems = [];
+            
+            // 💡 1. 캘린더에서 선택한 날짜가 에디터 화면 상단에 정확히 표시되도록 동적 업데이트
+            document.getElementById('editor-date-title').innerText = dateKey.replace(/-/g, '.');
 
-            if (diaryDatabase[dateKey]) {
+            if (diaryDatabase[dateKey] && diaryDatabase[dateKey].items && diaryDatabase[dateKey].items.length > 0) {
+                document.getElementById('empty-msg').style.display = 'none';
                 diaryDatabase[dateKey].items.forEach(item => addStickerToCanvas(item, item.x, item.y, true));
             } else {
                 document.getElementById('empty-msg').style.display = 'flex';
@@ -573,206 +784,164 @@
             setTimeout(() => { mainApp.style.opacity = '1'; mainApp.classList.remove('pointer-events-none'); mainApp.style.transform = 'translateY(0)'; }, 50);
             
             switchTab('school');
-        }
-
-        function backToCalendar() {
-            const mainApp = document.getElementById('main-app');
-            mainApp.style.opacity = '0'; mainApp.style.transform = 'translateY(10px)'; mainApp.classList.add('pointer-events-none');
-            setTimeout(() => { mainApp.classList.add('hidden'); showCalendarView(currentUsername); }, 300);
+            setTimeout(() => { updateStatus(); }, 50);
+            
+            if (window.gtag) gtag('event', 'screen_view', { app_name: 'BagFairy', screen_name: 'EditorView' });
         }
 
         function switchTab(tab) {
-            currentTab = tab;
-            isEditMode = false;
-            
+            currentTab = tab; isEditMode = false;
             ['school', 'daily', 'custom'].forEach(t => {
                 document.getElementById(`tab-${t}`).className = (t === tab) 
-                    ? "flex-1 py-1.5 rounded-lg font-bold text-xs bg-[#E2F9CF] text-[#75A47F] shadow-sm transition-all gothic-text"
+                    ? "flex-1 py-1.5 rounded-lg font-bold text-xs bg-[var(--color-light-green)] text-[var(--color-sage-green)] shadow-sm transition-all gothic-text"
                     : "flex-1 py-1.5 rounded-lg font-bold text-xs text-slate-400 transition-all gothic-text";
             });
-            document.getElementById('custom-upload-area').className = (tab === 'custom') ? "flex mt-2 shrink-0 gap-2" : "hidden";
+            document.getElementById('custom-upload-area').className = (tab === 'custom') ? "flex shrink-0 gap-2 pt-2 border-t border-slate-100" : "hidden";
             renderStickerList();
         }
 
         function toggleEditMode() {
             isEditMode = !isEditMode;
             const btn = document.getElementById('edit-mode-btn');
-            btn.innerHTML = isEditMode ? '✅' : '✏️';
-            if(isEditMode) {
-                btn.classList.add('bg-green-100', 'text-green-700');
-            } else {
-                btn.classList.remove('bg-green-100', 'text-green-700');
+            const iconPencil = document.getElementById('icon-pencil');
+            const iconCheck = document.getElementById('icon-check');
+            
+            if(isEditMode) { 
+                btn.classList.add('bg-green-50', 'border-green-300'); 
+                iconPencil.classList.add('hidden');
+                iconCheck.classList.remove('hidden');
+            } else { 
+                btn.classList.remove('bg-green-50', 'border-green-300'); 
+                iconPencil.classList.remove('hidden');
+                iconCheck.classList.add('hidden');
             }
             renderStickerList();
         }
 
         function deleteCustomSticker(idx) {
-            if(confirm("이 스티커를 정말로 삭제하시겠습니까?")) {
-                customStickers.splice(idx, 1);
-                if(customStickers.length === 0) {
-                    isEditMode = false;
-                    document.getElementById('edit-mode-btn').innerHTML = '✏️';
-                    document.getElementById('edit-mode-btn').classList.remove('bg-green-100', 'text-green-700');
-                }
-                renderStickerList();
-            }
+            customStickers.splice(idx, 1);
+            if(customStickers.length === 0) { toggleEditMode(); }
+            renderStickerList();
         }
 
         function renameCustomSticker(idx) {
             const newName = prompt("아이템의 새로운 이름을 입력하세요:", customStickers[idx].name);
             if(newName !== null && newName.trim() !== "") {
-                customStickers[idx].name = newName.trim();
-                renderStickerList();
+                customStickers[idx].name = newName.trim(); renderStickerList();
             }
         }
 
         function createStickerHTML(item, sizeClass = "text-3xl") {
             if (item.image && item.image.trim() !== "") {
-                return `<img src="${item.image}" crossorigin="anonymous" class="w-full h-full object-contain p-1.5 sticker-die-cut" style="pointer-events:none;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                return `<img src="${item.image}" crossorigin="anonymous" class="w-full h-full object-contain p-1 sticker-die-cut" style="pointer-events:none;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                         <span class="hidden ${sizeClass} sticker-die-cut" style="pointer-events:none;">${item.emoji}</span>`;
             } else {
                 return `<span class="${sizeClass} sticker-die-cut" style="pointer-events:none;">${item.emoji}</span>`;
             }
         }
 
+        // 모든 탭(프리셋 + 커스텀)의 아이콘 박스를 완벽한 정사각형으로 고정하고 텍스트가 잘리지 않는 레이아웃 연동
         function renderStickerList() {
             const list = document.getElementById('sticker-list');
             list.innerHTML = '';
-            let items = currentTab === 'custom' ? customStickers : PRESETS[currentTab];
+            
+            const isCustom = currentTab === 'custom';
+            let items = isCustom ? customStickers : PRESETS[currentTab];
             
             const editBtn = document.getElementById('edit-mode-btn');
-            if (currentTab === 'custom' && customStickers.length > 0) {
-                editBtn.classList.remove('hidden');
-            } else {
-                editBtn.classList.add('hidden');
-                isEditMode = false;
-                editBtn.innerHTML = '✏️';
-                editBtn.classList.remove('bg-green-100', 'text-green-700');
-            }
+            if (isCustom && customStickers.length > 0) { editBtn.classList.remove('hidden'); } else { editBtn.classList.add('hidden'); isEditMode = false; }
 
             items.forEach((item, index) => {
+                // 자식 최상단 div: 너비 높이를 절대 고정하지 않고, 부모 grid-cols-4에 따르며 flex-col 정렬 유지
                 const div = document.createElement('div');
-                div.className = "flex flex-col items-center gap-1 w-full select-none relative";
+                div.className = "w-full flex flex-col items-center select-none relative";
                 
-                if (isEditMode && currentTab === 'custom') {
+                if (isEditMode && isCustom) {
                     div.classList.add('edit-jiggle');
                 } else {
                     div.classList.add('active:scale-95', 'transition-transform', 'cursor-pointer');
                     div.onclick = (e) => {
-                        if (div.dataset.dragged === 'true') {
-                            div.dataset.dragged = 'false';
-                            return;
-                        }
+                        if (div.dataset.dragged === 'true') { div.dataset.dragged = 'false'; return; }
                         addStickerToCanvas(item, 25 + Math.random() * 30, 25 + Math.random() * 30);
                     };
                 }
 
-                const box = document.createElement('div');
-                box.className = "relative w-full aspect-square bg-[#FAF7F2] rounded-xl flex items-center justify-center shadow-sm border border-slate-100 shrink-0 overflow-hidden";
-                
-                if (isEditMode && currentTab === 'custom') {
+                // 1:1 완벽한 반응형 정사각형 박스 구현 (padding-bottom 100% 기법 도입)
+                // 이미지의 크기나 비율과 무관하게 무조건 동일한 크기의 사각형 박스가 바둑판을 이룹니다.
+                const boxWrapper = document.createElement('div');
+                boxWrapper.className = "relative w-full pb-[100%] bg-[#FAF7F2] rounded-2xl border border-slate-100 shadow-sm shrink-0";
+
+                // 박스 중앙에 정렬되는 실제 이미지/이모지 영역
+                const innerContainer = document.createElement('div');
+                innerContainer.className = "absolute inset-0 flex items-center justify-center p-1.5 overflow-hidden";
+
+                if (isEditMode && isCustom) {
                     const delBadge = document.createElement('div');
-                    delBadge.className = "absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-md cursor-pointer z-20 hover:scale-110";
+                    delBadge.className = "absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-md cursor-pointer z-50 hover:scale-110 pointer-events-auto";
                     delBadge.innerHTML = "✕";
-                    delBadge.onclick = (e) => {
-                        e.stopPropagation();
-                        deleteCustomSticker(index);
-                    };
-                    box.appendChild(delBadge);
+                    
+                    const handleDel = (e) => { e.preventDefault(); e.stopPropagation(); deleteCustomSticker(index); };
+                    delBadge.addEventListener('click', handleDel);
+                    delBadge.addEventListener('touchend', handleDel);
+                    boxWrapper.appendChild(delBadge);
                 }
 
-                const imgWrap = document.createElement('div');
-                imgWrap.className = "w-full h-full flex items-center justify-center";
                 if (item.isCustomImage) {
-                    imgWrap.innerHTML = `<img src="${item.image}" crossorigin="anonymous" class="w-[85%] h-[85%] object-cover rounded-full border border-slate-200" style="pointer-events:none;">`;
+                    innerContainer.innerHTML = `<img src="${item.image}" crossorigin="anonymous" class="w-full h-full object-contain sticker-die-cut" style="pointer-events:none;">`;
                 } else {
-                    imgWrap.innerHTML = createStickerHTML(item, "text-3xl");
+                    innerContainer.innerHTML = createStickerHTML(item, "text-3xl");
                 }
-                box.appendChild(imgWrap);
+                boxWrapper.appendChild(innerContainer);
 
+                // 이름 텍스트 높이 및 폰트 크기 완벽 통일
                 const name = document.createElement('p');
-                name.className = "text-[11px] font-bold text-slate-600 truncate w-full text-center gothic-text mt-0.5 leading-tight select-none";
+                name.className = "text-[10px] font-bold text-slate-700 w-full text-center gothic-text leading-tight select-none mt-1.5 h-8 overflow-hidden break-keep";
                 name.innerText = item.name;
+                name.style.display = "-webkit-box";
+                name.style.webkitLineClamp = "2";
+                name.style.webkitBoxOrient = "vertical";
 
-                if (isEditMode && currentTab === 'custom') {
-                    name.classList.add('bg-slate-200', 'rounded', 'px-1', 'py-0.5', 'cursor-pointer', 'hover:bg-slate-300');
-                    name.onclick = (e) => {
-                        e.stopPropagation();
-                        renameCustomSticker(index);
-                    };
+                if (isEditMode && isCustom) {
+                    name.classList.add('bg-slate-200', 'rounded-md', 'px-1', 'py-0.5', 'cursor-pointer', 'hover:bg-slate-300', 'pointer-events-auto', 'z-50');
+                    const handleRename = (e) => { e.preventDefault(); e.stopPropagation(); renameCustomSticker(index); };
+                    name.addEventListener('click', handleRename);
+                    name.addEventListener('touchend', handleRename);
                 }
 
-                div.appendChild(box); 
+                div.appendChild(boxWrapper); 
                 div.appendChild(name); 
                 list.appendChild(div);
 
+                // 드래그 앤 드롭 바인딩
                 if (!isEditMode) {
-                    let ghost = null;
-                    let startX = 0, startY = 0;
-                    let hasMoved = false;
-
+                    let ghost = null; let startX = 0, startY = 0; let hasMoved = false;
                     const onDragStart = (e) => {
                         hasMoved = false;
-                        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                        const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY;
                         startX = clientX; startY = clientY;
-
-                        ghost = document.createElement('div');
-                        ghost.className = "ghost-sticker w-14 h-14";
-                        ghost.style.left = `${clientX - 28}px`; ghost.style.top = `${clientY - 28}px`;
-                        
-                        if (item.isCustomImage) {
-                            ghost.innerHTML = `<img src="${item.image}" crossorigin="anonymous" class="w-14 h-14 object-cover rounded-full border-[3px] border-white drop-shadow-md" style="pointer-events:none;">`;
-                        } else {
-                            ghost.innerHTML = createStickerHTML(item, "text-5xl");
-                        }
+                        ghost = document.createElement('div'); ghost.className = "ghost-sticker w-14 h-14"; ghost.style.left = `${clientX - 28}px`; ghost.style.top = `${clientY - 28}px`;
+                        if (item.isCustomImage) { ghost.innerHTML = `<img src="${item.image}" crossorigin="anonymous" class="w-14 h-14 object-contain sticker-die-cut" style="pointer-events:none;">`; } else { ghost.innerHTML = createStickerHTML(item, "text-5xl"); }
                         document.body.appendChild(ghost);
-
-                        if (e.touches) {
-                            window.addEventListener('touchmove', onDragMove, { passive: false });
-                            window.addEventListener('touchend', onDragEnd);
-                        } else {
-                            window.addEventListener('mousemove', onDragMove);
-                            window.addEventListener('mouseup', onDragEnd);
-                        }
+                        if (e.touches) { window.addEventListener('touchmove', onDragMove, { passive: false }); window.addEventListener('touchend', onDragEnd); } else { window.addEventListener('mousemove', onDragMove); window.addEventListener('mouseup', onDragEnd); }
                     };
-
                     const onDragMove = (e) => {
                         if (!ghost) return;
-                        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                        if (Math.abs(clientX - startX) > 10 || Math.abs(clientY - startY) > 10) {
-                            hasMoved = true; div.dataset.dragged = 'true';
-                        }
-                        if (hasMoved) {
-                            e.preventDefault();
-                            ghost.style.left = `${clientX - 28}px`; ghost.style.top = `${clientY - 28}px`;
-                        }
+                        const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                        if (Math.abs(clientX - startX) > 10 || Math.abs(clientY - startY) > 10) { hasMoved = true; div.dataset.dragged = 'true'; }
+                        if (hasMoved) { e.preventDefault(); ghost.style.left = `${clientX - 28}px`; ghost.style.top = `${clientY - 28}px`; }
                     };
-
                     const onDragEnd = (e) => {
-                        if (e.touches) {
-                            window.removeEventListener('touchmove', onDragMove); window.removeEventListener('touchend', onDragEnd);
-                        } else {
-                            window.removeEventListener('mousemove', onDragMove); window.removeEventListener('mouseup', onDragEnd);
-                        }
+                        if (e.touches) { window.removeEventListener('touchmove', onDragMove); window.removeEventListener('touchend', onDragEnd); } else { window.removeEventListener('mousemove', onDragMove); window.removeEventListener('mouseup', onDragEnd); }
                         if (!ghost) return;
-
-                        const dropZone = document.getElementById('drop-zone');
-                        const dropRect = dropZone.getBoundingClientRect();
-                        const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
-                        const clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
-
+                        const dropZone = document.getElementById('drop-zone'); const dropRect = dropZone.getBoundingClientRect();
+                        const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX; const clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
                         if (hasMoved && clientX >= dropRect.left && clientX <= dropRect.right && clientY >= dropRect.top && clientY <= dropRect.bottom) {
-                            const dropXPercent = ((clientX - dropRect.left - 28) / dropRect.width) * 100;
-                            const dropYPercent = ((clientY - dropRect.top - 28) / dropRect.height) * 100;
+                            const dropXPercent = ((clientX - dropRect.left - 28) / dropRect.width) * 100; const dropYPercent = ((clientY - dropRect.top - 28) / dropRect.height) * 100;
                             addStickerToCanvas(item, dropXPercent, dropYPercent);
                         }
                         if (ghost) { ghost.remove(); ghost = null; }
                     };
-
-                    div.addEventListener('mousedown', onDragStart);
-                    div.addEventListener('touchstart', onDragStart, { passive: true });
+                    div.addEventListener('mousedown', onDragStart); div.addEventListener('touchstart', onDragStart, { passive: true });
                 }
             });
         }
@@ -807,12 +976,8 @@
                         };
                         reader.readAsDataURL(blob);
                         return;
-                    } else {
-                        console.error("누끼 API 에러:", response.statusText);
                     }
-                } catch (err) {
-                    console.error("API 통신 에러:", err);
-                }
+                } catch (err) { console.error("API 통신 에러:", err); }
             }
 
             const reader = new FileReader();
@@ -832,16 +997,13 @@
         }
 
         function openCustomNameModal(item) {
-            document.getElementById('preview-custom-img').innerHTML = item.image 
-                ? `<img src="${item.image}" crossorigin="anonymous" class="w-[85%] h-[85%] object-cover rounded-full border-4 border-white drop-shadow-md">` 
-                : `<span class="text-6xl">${item.emoji}</span>`;
+            document.getElementById('preview-custom-img').innerHTML = item.image ? `<img src="${item.image}" crossorigin="anonymous" class="w-[85%] h-[85%] object-contain sticker-die-cut">` : `<span class="text-6xl">${item.emoji}</span>`;
             document.getElementById('custom-name-input').value = "";
-            
             const modal = document.getElementById('custom-name-modal');
             modal.classList.remove('hidden'); modal.classList.add('flex');
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
-                modal.querySelector('div').classList.remove('scale-95');
+                modal.querySelector('div').classList.remove('scale-100');
                 modal.querySelector('div').classList.add('scale-100');
             }, 10);
         }
@@ -860,109 +1022,73 @@
             customStickers.unshift({...tempCustomItem});
             closeCustomNameModal();
             setTimeout(() => renderStickerList(), 300);
+            
+            if (window.gtag) window.gtag('event', 'add_custom_item', { item_name: name });
         }
 
         function addStickerToCanvas(item, xPercent, yPercent, isRecovery = false) {
             document.getElementById('empty-msg').style.display = 'none';
-            const id = isRecovery ? item.id : Date.now();
+            const id = isRecovery ? item.id : Date.now() + '-' + Math.floor(Math.random() * 1000);
             const rotation = isRecovery ? item.rotation : (Math.random() * 24 - 12);
             
             const sticker = document.createElement('div');
-            sticker.id = `sticker-${id}`;
-            sticker.className = "draggable-sticker animate-pop w-14 h-14";
-            sticker.style.left = `${xPercent}%`;
-            sticker.style.top = `${yPercent}%`;
-            sticker.style.transform = `rotate(${rotation}deg)`;
+            sticker.id = `sticker-${id}`; sticker.className = "draggable-sticker animate-pop w-14 h-14";
+            sticker.style.left = `${xPercent}%`; sticker.style.top = `${yPercent}%`; sticker.style.transform = `rotate(${rotation}deg)`;
 
-            if (item.isCustomImage) {
-                sticker.innerHTML = `<img src="${item.image}" crossorigin="anonymous" class="w-14 h-14 object-cover rounded-full border-[3px] border-white drop-shadow-md" style="pointer-events:none;">`;
-            } else if (item.image) {
-                sticker.innerHTML = `<img src="${item.image}" crossorigin="anonymous" class="w-14 h-14 object-contain sticker-die-cut" style="pointer-events:none;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"><span class="hidden text-5xl sticker-die-cut" style="pointer-events:none;">${item.emoji}</span>`;
-            } else {
-                sticker.innerHTML = `<span class="text-5xl select-none sticker-die-cut" style="pointer-events:none;">${item.emoji}</span>`;
-            }
+            if (item.isCustomImage) { sticker.innerHTML = `<img src="${item.image}" crossorigin="anonymous" class="w-14 h-14 object-contain sticker-die-cut" style="pointer-events:none;">`; } else if (item.image) { sticker.innerHTML = `<img src="${item.image}" crossorigin="anonymous" class="w-14 h-14 object-contain sticker-die-cut" style="pointer-events:none;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"><span class="hidden text-5xl sticker-die-cut" style="pointer-events:none;">${item.emoji}</span>`; } else { sticker.innerHTML = `<span class="text-5xl select-none sticker-die-cut" style="pointer-events:none;">${item.emoji}</span>`; }
 
-            const label = document.createElement('span');
-            label.className = "sticker-label shadow-sm absolute -bottom-5 left-1/2 transform -translate-x-1/2";
-            label.innerText = item.name;
-            sticker.appendChild(label);
-
+            const label = document.createElement('span'); label.className = "sticker-label shadow-sm absolute -bottom-5 left-1/2 transform -translate-x-1/2";
+            label.innerText = item.name; sticker.appendChild(label);
             document.getElementById('sticker-container').appendChild(sticker);
 
             const canvasItem = { id, name: item.name, weight: item.weight, emoji: item.emoji || null, image: item.image || null, x: xPercent, y: yPercent, rotation, isCustomImage: item.isCustomImage || false };
             currentItems.push(canvasItem);
 
-            if (!isRecovery) triggerBagJiggle();
+            if (!isRecovery) {
+                triggerBagJiggle();
+                if (window.gtag) window.gtag('event', 'put_item_in_bag', { item_name: item.name, weight: item.weight });
+            }
 
             let isDragging = false, isClick = true, startX, startY, initialLeft, initialTop, touchStartTime = 0;
-            
             const deleteAction = () => {
                 sticker.classList.add("scale-0", "transition-all", "duration-200");
                 setTimeout(() => {
-                    sticker.remove();
-                    currentItems = currentItems.filter(i => i.id !== id);
-                    updateStatus(); triggerBagJiggle();
+                    sticker.remove(); currentItems = currentItems.filter(i => i.id !== id); updateStatus(); triggerBagJiggle();
                     if (currentItems.length === 0) document.getElementById('empty-msg').style.display = 'flex';
                 }, 200);
             };
 
             const onStart = (e) => {
                 isDragging = true; isClick = true; touchStartTime = Date.now(); sticker.classList.add('dragging');
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                startX = clientX; startY = clientY;
-                initialLeft = sticker.offsetLeft; initialTop = sticker.offsetTop;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                startX = clientX; startY = clientY; initialLeft = sticker.offsetLeft; initialTop = sticker.offsetTop;
             };
-
             const onMove = (e) => {
                 if (!isDragging) return;
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY;
                 if (Math.abs(clientX - startX) > 8 || Math.abs(clientY - startY) > 8) isClick = false;
-
                 if (!isClick) {
                     let nl = initialLeft + (clientX - startX), nt = initialTop + (clientY - startY);
                     sticker.style.left = `${nl}px`; sticker.style.top = `${nt}px`;
-                    canvasItem.x = (nl / document.getElementById('drop-zone').clientWidth) * 100;
-                    canvasItem.y = (nt / document.getElementById('drop-zone').clientHeight) * 100;
+                    canvasItem.x = (nl / document.getElementById('drop-zone').clientWidth) * 100; canvasItem.y = (nt / document.getElementById('drop-zone').clientHeight) * 100;
                 }
             };
+            const onEnd = () => { if (!isDragging) return; isDragging = false; sticker.classList.remove('dragging'); const touchDuration = Date.now() - touchStartTime; if (isClick && touchDuration < 300) { deleteAction(); } else { updateStatus(); } };
 
-            const onEnd = () => {
-                if (!isDragging) return; 
-                isDragging = false; sticker.classList.remove('dragging');
-                const touchDuration = Date.now() - touchStartTime;
-                if (isClick && touchDuration < 300) {
-                    deleteAction();
-                } else {
-                    updateStatus();
-                }
-            };
-
-            sticker.addEventListener('mousedown', onStart);
-            window.addEventListener('mousemove', onMove);
-            window.addEventListener('mouseup', onEnd);
-            sticker.addEventListener('touchstart', onStart, { passive: true });
-            window.addEventListener('touchmove', onMove, { passive: true });
-            window.addEventListener('touchend', onEnd);
-
+            sticker.addEventListener('mousedown', onStart); window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onEnd);
+            sticker.addEventListener('touchstart', onStart, { passive: true }); window.addEventListener('touchmove', onMove, { passive: true }); window.addEventListener('touchend', onEnd);
             updateStatus();
         }
 
-        function triggerBagJiggle() {
-            const bag = document.getElementById('interactive-backpack-wrap');
-            bag.classList.remove('bag-jiggle'); void bag.offsetWidth; bag.classList.add('bag-jiggle');
-        }
+        function triggerBagJiggle() { const bag = document.getElementById('interactive-backpack-wrap'); bag.classList.remove('bag-jiggle'); void bag.offsetWidth; bag.classList.add('bag-jiggle'); }
 
         function updateStatus() {
-            const bagWrap = document.getElementById('interactive-backpack-wrap');
-            const bagSvg = document.getElementById('interactive-backpack');
-            const bagFace = document.getElementById('bag-face');
-            const bagSweat = document.getElementById('bag-sweat');
-
+            const bagWrap = document.getElementById('interactive-backpack-wrap'); const bagSvg = document.getElementById('interactive-backpack'); const bagFace = document.getElementById('bag-face'); const bagSweat = document.getElementById('bag-sweat');
+            
             if (currentItems.length === 0) {
-                document.getElementById('status-emoji').innerText = '🧚';
-                document.getElementById('status-label').innerText = '가뿐한 출발';
+                // 💡 디폴트 상태 문구와 이모지를 🪶(깃털)로 완전 일치 리셋
+                document.getElementById('status-emoji').innerText = '🪶'; document.getElementById('status-label').innerText = '깃털 가벼움';
+                document.documentElement.style.setProperty('--bag-scale', '1.0');
                 if (bagWrap) bagWrap.style.transform = 'scale(1.0)';
                 if (bagSvg) bagSvg.style.color = "rgba(129, 140, 248, 0.25)";
                 if (bagFace) {
@@ -977,118 +1103,72 @@
             }
             
             const total = currentItems.reduce((sum, item) => sum + item.weight, 0);
-            const level = STRAIN.findIndex(s => total < s.threshold);
-            const status = STRAIN[level] || STRAIN[STRAIN.length - 1];
-            
-            document.getElementById('status-emoji').innerText = status.emoji;
-            document.getElementById('status-label').innerText = status.label;
-            
-            const targetScale = Math.min(1.7, 1.0 + (total * 0.12));
-            document.documentElement.style.setProperty('--bag-scale', targetScale.toString());
-            document.getElementById('interactive-backpack-wrap').style.transform = `scale(${targetScale})`;
+            const level = STRAIN.findIndex(s => total < s.threshold); const status = STRAIN[level] || STRAIN[STRAIN.length - 1];
+            document.getElementById('status-emoji').innerText = status.emoji; document.getElementById('status-label').innerText = status.label;
+            const targetScale = Math.min(1.7, 1.0 + (total * 0.12)); document.documentElement.style.setProperty('--bag-scale', targetScale.toString()); document.getElementById('interactive-backpack-wrap').style.transform = `scale(${targetScale})`;
 
             if (bagSvg) {
                 if (level <= 1) { 
-                    bagSvg.style.color = "rgba(129, 140, 248, 0.25)";
-                    bagFace.innerHTML = `
-                        <path d="M43 68 Q45 65 47 68" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-                        <path d="M53 68 Q55 65 57 68" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-                        <path d="M48 71 Q50 74 52 71" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-                    `;
+                    bagSvg.style.color = "rgba(129, 140, 248, 0.25)"; bagFace.innerHTML = `<path d="M43 68 Q45 65 47 68" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M53 68 Q55 65 57 68" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M48 71 Q50 74 52 71" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>`;
                     if (bagSweat) { bagSweat.classList.remove('opacity-100'); bagSweat.classList.add('opacity-0'); }
                 } else if (level === 2) { 
-                    bagSvg.style.color = "rgba(117, 164, 127, 0.35)";
-                    bagFace.innerHTML = `
-                        <circle cx="45" cy="68" r="2" fill="#5c554e"/>
-                        <circle cx="55" cy="68" r="2" fill="#5c554e"/>
-                        <path d="M48 72 L52 72" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-                    `;
+                    bagSvg.style.color = "var(--color-sage-green)"; bagFace.innerHTML = `<circle cx="45" cy="68" r="2" fill="#5c554e"/><circle cx="55" cy="68" r="2" fill="#5c554e"/><path d="M48 72 L52 72" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>`;
                     if (bagSweat) { bagSweat.classList.remove('opacity-100'); bagSweat.classList.add('opacity-0'); }
                 } else if (level === 3) { 
-                    bagSvg.style.color = "rgba(245, 158, 11, 0.35)";
-                    bagFace.innerHTML = `
-                        <path d="M43 67 L47 69" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M57 67 L53 69" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round"/>
-                        <circle cx="45" cy="70" r="1.5" fill="#5c554e"/>
-                        <circle cx="55" cy="70" r="1.5" fill="#5c554e"/>
-                        <path d="M48 74 Q50 72 52 74" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-                    `;
+                    bagSvg.style.color = "var(--color-slate-blue)"; bagFace.innerHTML = `<path d="M43 67 L47 69" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round"/><path d="M57 67 L53 69" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round"/><circle cx="45" cy="70" r="1.5" fill="#5c554e"/><circle cx="55" cy="70" r="1.5" fill="#5c554e"/><path d="M48 74 Q50 72 52 74" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>`;
                     if (bagSweat) { bagSweat.classList.remove('opacity-0'); bagSweat.classList.add('opacity-100'); }
                 } else { 
-                    bagSvg.style.color = "rgba(239, 68, 68, 0.4)";
-                    bagFace.innerHTML = `
-                        <path d="M43 66 L47 70 M47 66 L43 70" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M53 66 L57 70 M57 66 L53 70" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M47 74 Q50 70 53 74" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-                    `;
+                    bagSvg.style.color = "var(--color-muted-pink)"; bagFace.innerHTML = `<path d="M43 66 L47 70 M47 66 L43 70" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round"/><path d="M53 66 L57 70 M57 66 L53 70" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round"/><path d="M47 74 Q50 70 53 74" stroke="#5c554e" stroke-width="1.5" stroke-linecap="round" fill="none"/>`;
                     if (bagSweat) { bagSweat.classList.remove('opacity-0'); bagSweat.classList.add('opacity-100'); }
                 }
             }
         }
 
-        function saveDiaryAndAnalyze() {
+        async function saveDiaryAndAnalyze() {
             if (currentItems.length === 0) return alert("가방에 물건을 넣어주세요!");
             const total = currentItems.reduce((sum, item) => sum + item.weight, 0);
-            const level = STRAIN.findIndex(s => total < s.threshold);
-            const status = STRAIN[level] || STRAIN[STRAIN.length - 1];
+            const level = STRAIN.findIndex(s => total < s.threshold); const status = STRAIN[level] || STRAIN[STRAIN.length - 1];
 
             diaryDatabase[selectedDateKey] = { items: [...currentItems], status };
-            localStorage.setItem(`bag_fairy_diary_user_${currentUsername}`, JSON.stringify(diaryDatabase));
 
-            document.getElementById('res-emoji').innerText = status.emoji;
-            document.getElementById('res-label').innerText = status.label;
-            document.getElementById('res-comment').innerText = `"${getRandomComment(level)}"`;
-            document.getElementById('card-date').innerText = selectedDateKey.replace(/-/g, '.');
+            if (window.FBDiary) {
+                await window.FBDiary.saveUser(currentUsername, currentPin, diaryDatabase);
+            } else {
+                localStorage.setItem(`bag_fairy_diary_user_${currentUsername}`, JSON.stringify(diaryDatabase));
+            }
 
-            const modal = document.getElementById('result-modal');
-            modal.classList.remove('hidden'); modal.classList.add('flex');
+            document.getElementById('res-emoji').innerText = status.emoji; document.getElementById('res-label').innerText = status.label; document.getElementById('res-comment').innerText = `"${getRandomComment(level)}"`; document.getElementById('card-date').innerText = selectedDateKey.replace(/-/g, '.');
+
+            const modal = document.getElementById('result-modal'); modal.classList.remove('hidden'); modal.classList.add('flex');
             setTimeout(() => { modal.querySelector('div').style.opacity = '1'; modal.querySelector('div').style.transform = 'scale(1)'; }, 50);
+            
+            if (window.gtag) gtag('event', 'complete_diagnosis', { total_weight: total, strain_level: status.label });
         }
 
         function openDayDetailModal(dateKey) {
-            selectedDateKey = dateKey;
-            const data = diaryDatabase[dateKey];
-            document.getElementById('detail-date').innerText = dateKey;
-            document.getElementById('detail-emoji').innerText = data.status.emoji;
-            document.getElementById('detail-emoji').style.backgroundColor = data.status.color;
+            selectedDateKey = dateKey; const data = diaryDatabase[dateKey];
+            
+            // 💡 2. 디테일 모달에서도 선택한 날짜 포맷 적용 및 아이템 개수 동적 카운트
+            document.getElementById('detail-date').innerText = dateKey.replace(/-/g, '.'); 
+            document.getElementById('detail-emoji').innerText = data.status.emoji; 
+            document.getElementById('detail-emoji').style.backgroundColor = data.status.color; 
             document.getElementById('detail-label').innerText = data.status.label;
-
-            const list = document.getElementById('detail-item-list');
-            list.innerHTML = '';
+            document.getElementById('detail-total-items').innerText = `총 ${data.items.length}개의 짐이 있어요`;
+            
+            const list = document.getElementById('detail-item-list'); list.innerHTML = '';
             data.items.forEach(item => {
-                const div = document.createElement('div');
-                div.className = "flex flex-col items-center gap-1 w-full";
-                
-                let visualEl = '';
-                if (item.image) {
-                    visualEl = `<img src="${item.image}" crossorigin="anonymous" class="w-10 h-10 object-contain sticker-die-cut">`;
-                } else {
-                    visualEl = `<span class="sticker-die-cut text-2xl">${item.emoji}</span>`;
-                }
-
-                div.innerHTML = `<div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-slate-100 overflow-hidden">${visualEl}</div>
-                                 <p class="text-[10px] text-center font-bold text-slate-500 truncate w-full">${item.name}</p>`;
+                const div = document.createElement('div'); div.className = "flex flex-col items-center gap-1 w-full";
+                let visualEl = item.image ? `<img src="${item.image}" crossorigin="anonymous" class="w-10 h-10 object-contain sticker-die-cut">` : `<span class="sticker-die-cut text-2xl">${item.emoji}</span>`;
+                div.innerHTML = `<div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-slate-100 overflow-hidden">${visualEl}</div><p class="text-[10px] text-center font-bold text-slate-500 truncate w-full">${item.name}</p>`;
                 list.appendChild(div);
             });
-
-            const modal = document.getElementById('day-detail-modal');
-            modal.classList.remove('hidden'); modal.classList.add('flex');
+            const modal = document.getElementById('day-detail-modal'); modal.classList.remove('hidden'); modal.classList.add('flex');
             setTimeout(() => { modal.style.opacity = '1'; modal.querySelector('div').style.transform = 'scale(1)'; }, 10);
         }
 
-        function closeDayDetailModal() {
-            const modal = document.getElementById('day-detail-modal');
-            modal.style.opacity = '0';
-            setTimeout(() => { modal.classList.remove('flex'); modal.classList.add('hidden'); }, 300);
-        }
-
+        function closeDayDetailModal() { const modal = document.getElementById('day-detail-modal'); modal.style.opacity = '0'; setTimeout(() => { modal.classList.remove('flex'); modal.classList.add('hidden'); }, 300); }
         function editFromDetail() { closeDayDetailModal(); setTimeout(() => openEditorForDate(selectedDateKey), 300); }
-
-        function closeModalAndCalendar() {
-            const modal = document.getElementById('result-modal');
-            modal.classList.add('hidden');
-            backToCalendar();
-        }
+        function closeModalAndCalendar() { document.getElementById('result-modal').classList.add('hidden'); goToCalendar(); }
     </script>
 </body>
 </html>

@@ -18,7 +18,6 @@
     <style>
         * { box-sizing: border-box; }
 
-        /* 전달받은 파스텔 무드의 컬러 팔레트 적용 */
         :root {
             --main-font: 'Dongle', sans-serif;
             --gothic-font: 'IBM Plex Sans KR', sans-serif;
@@ -99,7 +98,6 @@
             border-right: 2px dashed rgba(255,255,255,0.5);
         }
 
-        /* 흰색 다이컷 칼선 스티커 스타일 필터 */
         .sticker-die-cut {
             filter: drop-shadow(2px 0px 0px #ffffff)
                     drop-shadow(-2px 0px 0px #ffffff)
@@ -205,7 +203,6 @@
             </div>
             <h1 class="text-6xl font-bold italic mb-6 leading-none dongle-title">가방 요정<br><span class="text-[var(--color-slate-blue)] underline decoration-[var(--color-muted-pink)] decoration-4">기록장</span></h1>
             
-            <!-- 입력 상자 글씨 밀착 정렬 반영 -->
             <div class="w-full max-w-xs space-y-2 mb-6 flex flex-col items-center">
                 <input type="text" id="username-input" placeholder="나만의 닉네임" maxlength="10" 
                        class="w-full px-4 py-2.5 bg-white border-2 border-[var(--color-light-green)] rounded-xl text-center font-bold text-sm focus:outline-none focus:border-[var(--color-slate-blue)] transition-all shadow-inner gothic-text tracking-normal">
@@ -213,7 +210,6 @@
                        class="w-full px-4 py-2.5 bg-white border-2 border-[var(--color-light-green)] rounded-xl text-center font-bold text-sm focus:outline-none focus:border-[var(--color-slate-blue)] transition-all shadow-inner gothic-text tracking-normal">
             </div>
 
-            <!-- 버튼 패딩 조정(py-3) 및 글자 크기 축소(text-lg) 적용하여 부담스럽지 않고 깔끔하게 연출 -->
             <button id="start-btn" onclick="saveUserAndNext()" class="w-full max-w-xs py-3 bg-[var(--color-slate-blue)] hover:bg-[var(--color-sage-green)] text-white rounded-full font-bold text-lg shadow-md active:translate-y-1 transition-all gothic-text tracking-wider flex items-center justify-center gap-2">
                 <span>오늘의 가방 싸러가기 ✨</span>
             </button>
@@ -221,14 +217,12 @@
 
         <!-- 2. 캘린더 아카이브 페이지 -->
         <div id="calendar-view" class="absolute inset-0 z-[150] bg-[var(--color-cream)] flex flex-col page-transition hidden">
-            <!-- 홈 화면 헤더와 완벽히 대칭되는 패딩과 배치 설정 (p-5, items-center) -->
             <header class="p-5 flex justify-between items-center shrink-0">
                 <div>
                     <span id="user-welcome-title" class="text-[var(--color-sage-green)] font-bold text-xs tracking-wider gothic-text">안녕하세요!</span>
                     <h2 class="text-4xl font-bold italic text-slate-900 leading-none dongle-title">나의 요정 달력</h2>
                 </div>
                 
-                <!-- 홈 바로가기 버튼 규격과 위치를 홈화면 캘린더 버튼과 100% 동일하게 일치시킴 -->
                 <button onclick="backToMainApp()" class="p-2.5 bg-white border border-slate-100 rounded-xl text-[var(--color-slate-blue)] shadow-sm active:scale-95 transition-all flex items-center justify-center" title="홈으로">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -252,7 +246,6 @@
 
         <!-- 3. 메인 가방 구성 페이지 (홈 화면) -->
         <div id="main-app" class="absolute inset-0 opacity-0 pointer-events-none page-transition transform translate-y-10 hidden flex flex-col overflow-hidden">
-            <!-- 캘린더 헤더와 완벽히 대칭되는 패딩과 배치 설정 (p-5, items-center) -->
             <header class="p-5 flex justify-between items-center z-10 shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="flex flex-col ml-1">
@@ -261,7 +254,6 @@
                     </div>
                 </div>
                 
-                <!-- 캘린더 버튼 규격과 위치가 캘린더 화면의 홈버튼과 100% 동일한 좌표를 가짐 -->
                 <button onclick="goToCalendar()" class="p-2.5 bg-white border border-slate-100 rounded-xl text-[var(--color-slate-blue)] shadow-sm active:scale-95 transition-all flex items-center justify-center" title="달력 보기">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -301,7 +293,6 @@
 
                 <div id="sticker-container" class="absolute inset-0 z-20"></div>
 
-                <!-- 디폴트 이모지를 🪶(깃털)로 변경해 가시성 해결 -->
                 <div class="absolute top-4 left-5 z-30 pointer-events-none">
                     <div class="flex items-center gap-2 drop-shadow-md">
                         <span id="status-emoji" class="text-4xl">🪶</span>
@@ -309,7 +300,6 @@
                     </div>
                 </div>
 
-                <!-- 🔄 새로고침 버튼 상단 우측 고정 -->
                 <div class="absolute top-4 right-4 z-30 pointer-events-auto">
                     <button onclick="clearAllItems()" class="bg-white/90 backdrop-blur-md hover:bg-slate-100 text-slate-500 p-2.5 rounded-full shadow-md active:scale-95 transition-all border border-slate-200 flex items-center justify-center" title="새로고침(모두 비우기)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -326,7 +316,6 @@
                 </div>
             </main>
 
-            <!-- 하단 주머니 공간 -->
             <div class="flex-1 bg-white mx-4 mt-3 mb-4 rounded-[28px] border-4 border-white shadow-lg p-3 flex flex-col overflow-hidden relative">
                 <div class="flex gap-1 bg-slate-100 p-1 rounded-xl mb-2 shrink-0">
                     <button onclick="switchTab('school')" id="tab-school" class="flex-1 py-1.5 rounded-lg font-bold text-xs bg-[var(--color-light-green)] text-[var(--color-sage-green)] shadow-sm transition-all gothic-text">SCHOOL</button>
@@ -334,11 +323,9 @@
                     <button onclick="switchTab('custom')" id="tab-custom" class="flex-1 py-1.5 rounded-lg font-bold text-xs text-slate-400 transition-all gothic-text">MY</button>
                 </div>
 
-                <!-- 부모 Grid를 col-4로 고정하여 절대 찌그러지지 않고 크기를 가두어 둠 -->
                 <div class="relative flex-1 w-full overflow-hidden flex flex-col pt-1">
                     <div id="sticker-list" class="flex-1 grid grid-cols-4 gap-x-3 gap-y-4 overflow-y-auto custom-scrollbar pb-3 px-1 content-start"></div>
                     
-                    <!-- 편집 모드 플로팅 아이콘 -->
                     <button id="edit-mode-btn" onclick="toggleEditMode()" class="hidden absolute bottom-3 right-1 w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-lg text-slate-500 transition-all active:scale-95 z-40">
                         <svg id="icon-pencil" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                         <svg id="icon-check" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="hidden text-[var(--color-sage-green)]"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -360,12 +347,11 @@
                 
                 <div id="upload-loading" class="hidden mt-2 items-center justify-center h-14 w-full bg-slate-50 rounded-xl border border-dashed border-slate-200">
                     <div class="animate-spin rounded-full h-4 w-4 border-2 border-[var(--color-slate-blue)] border-t-transparent"></div>
-                    <span class="ml-2 text-[10px] font-bold text-slate-400 gothic-text">AI 배경 지우는 중... ✂️</span>
+                    <span class="ml-2 text-[10px] font-bold text-slate-400 gothic-text">처리 중... ✂️</span>
                 </div>
             </div>
         </div>
 
-        <!-- 일별 디테일 모달 -->
         <div id="day-detail-modal" class="absolute inset-0 z-[250] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-6 opacity-0 transition-opacity duration-300">
             <div class="bg-[#FAF7F2] w-full max-w-[320px] rounded-[35px] border-4 border-white shadow-2xl flex flex-col overflow-hidden transform scale-95 transition-transform duration-300 max-h-[80vh]">
                 <div class="p-6 bg-white border-b-2 border-dashed border-slate-200 flex flex-col items-center shrink-0">
@@ -388,7 +374,6 @@
             </div>
         </div>
 
-        <!-- 커스텀 아이템 이름 모달 -->
         <div id="custom-name-modal" class="absolute inset-0 z-[300] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-6 opacity-0 transition-opacity duration-300">
             <div class="bg-[var(--color-cream)] w-full max-w-[280px] rounded-[35px] border-4 border-white shadow-2xl p-6 flex flex-col items-center transform scale-95 transition-transform">
                 <h3 class="text-3xl font-bold italic mb-1 text-slate-800 dongle-title">이름을 지어주세요!</h3>
@@ -405,46 +390,39 @@
             </div>
         </div>
 
-        <!-- 디자인 레퍼런스 포스터 무드의 결과 진단 카드 모달 -->
         <div id="result-modal" class="absolute inset-0 z-[210] bg-slate-900/60 backdrop-blur-md hidden items-center justify-center p-6">
             <div class="w-full max-w-sm flex flex-col items-center justify-center transform scale-90 opacity-0 transition-all duration-300 gap-4">
                 
-                <!-- 캡처될 포스터 디자인 카드 영역 -->
                 <div id="capture-card" class="w-full bg-[var(--color-cream)] border-[3px] border-[var(--color-slate-blue)] rounded-[32px] overflow-hidden relative shadow-[8px_8px_0_0_var(--color-slate-blue)] flex flex-col">
-                    
-                    <!-- 헤더 타이틀 띠 -->
                     <div class="bg-[var(--color-slate-blue)] text-white px-5 py-3 flex justify-between items-center border-b-[3px] border-[var(--color-slate-blue)] shrink-0">
                         <span class="text-[13px] font-black tracking-widest uppercase gothic-text">My Bag Fairy</span>
                         <span id="card-date" class="text-[11px] font-bold gothic-text opacity-90">2026.05.22</span>
                     </div>
                     
-                    <!-- 카드 중앙 콘텐츠 영역 -->
                     <div class="flex-1 flex flex-col items-center justify-center p-6 pt-8 pb-8 relative">
-                        <!-- 데코레이션 요소 -->
                         <div class="absolute top-5 left-5 text-3xl opacity-20">✨</div>
                         <div class="absolute top-12 right-6 text-2xl opacity-20">☁️</div>
 
-                        <!-- 요정이 완벽히 카드 박스 정중앙에 배치되도록 교정 -->
                         <div class="w-[125px] h-[125px] rounded-full bg-[var(--color-light-green)] border-[3px] border-[var(--color-sage-green)] flex items-center justify-center text-7xl shadow-[4px_4px_0_0_var(--color-sage-green)] z-10 mb-6 shrink-0 relative">
                             <span id="res-emoji" class="transform hover:scale-110 transition-transform">🪶</span>
                         </div>
                         
-                        <!-- 가방 상태 명칭 -->
                         <h4 id="res-label" class="text-[42px] font-bold italic text-[var(--color-slate-blue)] dongle-title leading-none mb-6 drop-shadow-sm shrink-0">깃털 가벼움</h4>
                         
-                        <!-- 진단 코멘트 (팝업 스타일) -->
                         <div class="w-full bg-white border-[3px] border-[var(--color-muted-pink)] rounded-[20px] p-5 shadow-[4px_4px_0_0_var(--color-muted-pink)] relative shrink-0">
-                            <!-- 말풍선 꼬리 -->
                             <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t-[3px] border-l-[3px] border-[var(--color-muted-pink)] transform rotate-45"></div>
                             <p id="res-comment" class="text-lg font-bold text-[var(--color-muted-pink)] leading-snug break-keep gothic-text text-center">"가방이 텅 비었어요!"</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- 날씬하게 정돈된 달력 기록하기 버튼 -->
-                <div class="w-full px-1">
-                    <button onclick="closeModalAndCalendar()" class="w-full py-3.5 bg-[var(--color-sage-green)] hover:bg-green-700 text-white rounded-full font-bold text-2xl dongle-title active:translate-y-1 active:shadow-none transition-all shadow-[0_4px_0_0_#3d7a49] border border-white/20 tracking-wider">
-                        달력에 기록하기 📝
+                <!-- 💡 투버튼 레이아웃 도입 (뒤로가기 & 달력 기록) -->
+                <div class="w-full px-1 flex gap-2">
+                    <button onclick="closeResultModal()" class="w-1/3 py-3.5 bg-slate-300 hover:bg-slate-400 text-slate-700 rounded-full font-bold text-xl dongle-title active:translate-y-1 active:shadow-none transition-all shadow-[0_4px_0_0_#94a3b8] tracking-wider">
+                        뒤로가기
+                    </button>
+                    <button onclick="closeModalAndCalendar()" class="w-2/3 py-3.5 bg-[var(--color-sage-green)] hover:bg-green-700 text-white rounded-full font-bold text-2xl dongle-title active:translate-y-1 active:shadow-none transition-all shadow-[0_4px_0_0_#3d7a49] border border-white/20 tracking-wider">
+                        달력에 기록 📝
                     </button>
                 </div>
             </div>
@@ -559,6 +537,7 @@
                 document.getElementById('username-input').value = savedName;
                 document.getElementById('pin-input').value = savedPin;
                 document.getElementById('landing-page').style.display = 'none';
+                // 💡 첫 로드 및 로그인 직후 무조건 디폴트 빈 가방으로 들어가도록 제어
                 loadUserDatabase(savedName, savedPin);
             }
         });
@@ -581,7 +560,8 @@
         const PRESETS = {
             school: [
                 { name: '노트북', weight: 1.5, emoji: '💻', image: "https://i.ibb.co/0pP4LCzp/laptop1.png" }, 
-                { name: '아이패드', weight: 0.6, emoji: '📱', image: "https://i.ibb.co/zWVq9vQD/ipad.png" },
+                // 💡 명칭 교체: 아이패드 -> 태블릿
+                { name: '태블릿', weight: 0.6, emoji: '📱', image: "https://i.ibb.co/zWVq9vQD/ipad.png" },
                 { name: '전공책', weight: 1.2, emoji: '📚', image: "https://i.ibb.co/60knpScz/majorbook.png" },
                 { name: '필통', weight: 0.3, emoji: '✏️', image: "https://i.ibb.co/23rmF5S0/pencilcase.png" },
                 { name: '헤드폰', weight: 0.4, emoji: '🎧', image: "https://i.ibb.co/yc78739c/headphone.png" },
@@ -610,10 +590,10 @@
         };
 
         const STRAIN = [
-            { threshold: 0.5, label: '깃털 가벼움', emoji: '🪶', color: '#DDF8CD' },
-            { threshold: 1.8, label: '요정 평화존', emoji: '🧚', color: '#DDF8CD' },
-            { threshold: 2.8, label: '돌덩이 수송', emoji: '🧱', color: '#5C9E6A' },
-            { threshold: 4.2, label: '승모근 화산', emoji: '🌋', color: '#FA86C4' },
+            { threshold: 0.8, label: '깃털 가벼움', emoji: '🪶', color: '#DDF8CD' },
+            { threshold: 3.0, label: '요정 평화존', emoji: '🧚', color: '#DDF8CD' },
+            { threshold: 4.2, label: '돌덩이 수송', emoji: '🧱', color: '#5C9E6A' },
+            { threshold: 5.5, label: '승모근 화산', emoji: '🌋', color: '#FA86C4' },
             { threshold: Infinity, label: '어깨 붕괴 경보', emoji: '☠️', color: '#8AA2C7' }
         ];
 
@@ -634,10 +614,11 @@
                 }
                 if (window.gtag) gtag('event', 'login', { method: 'Nickname', username: username });
                 
-                openEditorForDate(getTodayDateKey());
+                // 💡 로그인 시 무조건 완전 빈 가방 상태로 렌더링되게 하도록 `true` 설정
+                openEditorForDate(getTodayDateKey(), true);
             } catch (error) {
                 console.error("데이터베이스 불러오기 실패:", error);
-                openEditorForDate(getTodayDateKey());
+                openEditorForDate(getTodayDateKey(), true);
             }
         }
 
@@ -710,7 +691,8 @@
             document.getElementById('calendar-view').style.opacity = '0';
             setTimeout(() => { 
                 document.getElementById('calendar-view').classList.add('hidden'); 
-                openEditorForDate(getTodayDateKey());
+                // 💡 캘린더에서 홈으로 복귀 시 무조건 완전 초기화(빈가방) 되도록 `true` 설정
+                openEditorForDate(getTodayDateKey(), true);
             }, 300);
         }
 
@@ -743,7 +725,9 @@
                     cell.appendChild(stamp);
                 }
                 if (dateKey === getTodayDateKey()) cell.classList.add("ring-2", "ring-[var(--color-slate-blue)]");
-                cell.onclick = () => diaryDatabase[dateKey] ? openDayDetailModal(dateKey) : openEditorForDate(dateKey);
+                
+                // 💡 기록이 없는 빈 날짜를 클릭하면 초기화(`true`) 
+                cell.onclick = () => diaryDatabase[dateKey] ? openDayDetailModal(dateKey) : openEditorForDate(dateKey, true);
                 daysContainer.appendChild(cell);
             }
         }
@@ -762,17 +746,21 @@
             triggerBagJiggle();
         }
 
-        function openEditorForDate(dateKey) {
+        // 💡 forceEmpty 인자를 통해 '빈 가방 시작'과 '기존 날짜 복원'을 완벽 분리
+        function openEditorForDate(dateKey, forceEmpty = false) {
             selectedDateKey = dateKey;
             document.getElementById('sticker-container').innerHTML = '';
             currentItems = [];
             
-            // 💡 선택한 날짜가 에디터 화면 상단에 정확히 표시되도록 동적 업데이트
             document.getElementById('editor-date-title').innerText = dateKey.replace(/-/g, '.');
 
-            // 💡 [불쾌방지 처리]: 새 화면을 열거나 로그인했을 때는 기존에 임시 저장된 가방 상태를 캔버스에 복원하지 않고
-            // 무조건 깨끗하게 리셋된 가방에서 다시 시작하도록 render 구문을 배제하고 빈 가방으로 초기화합니다.
-            document.getElementById('empty-msg').style.display = 'flex';
+            if (!forceEmpty && diaryDatabase[dateKey] && diaryDatabase[dateKey].items && diaryDatabase[dateKey].items.length > 0) {
+                document.getElementById('empty-msg').style.display = 'none';
+                // 기존 아이템 복원 시 고유 id 충돌 방지를 위해 isRecovery=true 세팅
+                diaryDatabase[dateKey].items.forEach(item => addStickerToCanvas(item, item.x, item.y, true));
+            } else {
+                document.getElementById('empty-msg').style.display = 'flex';
+            }
 
             document.getElementById('calendar-view').classList.add('hidden');
             const mainApp = document.getElementById('main-app');
@@ -836,7 +824,6 @@
             }
         }
 
-        // 모든 탭(프리셋 + 커스텀)의 아이콘 박스를 완벽한 정사각형으로 고정하고 텍스트가 잘리지 않는 레이아웃 연동
         function renderStickerList() {
             const list = document.getElementById('sticker-list');
             list.innerHTML = '';
@@ -848,7 +835,6 @@
             if (isCustom && customStickers.length > 0) { editBtn.classList.remove('hidden'); } else { editBtn.classList.add('hidden'); isEditMode = false; }
 
             items.forEach((item, index) => {
-                // 자식 최상단 div: 너비 높이를 절대 고정하지 않고, 부모 grid-cols-4에 따르며 flex-col 정렬 유지
                 const div = document.createElement('div');
                 div.className = "w-full flex flex-col items-center select-none relative";
                 
@@ -862,11 +848,9 @@
                     };
                 }
 
-                // 1:1 완벽한 반응형 정사각형 박스 구현 (padding-bottom 100% 기법 도입)
                 const boxWrapper = document.createElement('div');
                 boxWrapper.className = "relative w-full pb-[100%] bg-[#FAF7F2] rounded-2xl border border-slate-100 shadow-sm shrink-0";
 
-                // 박스 중앙에 정렬되는 실제 이미지/이모지 영역
                 const innerContainer = document.createElement('div');
                 innerContainer.className = "absolute inset-0 flex items-center justify-center p-1.5 overflow-hidden";
 
@@ -888,7 +872,6 @@
                 }
                 boxWrapper.appendChild(innerContainer);
 
-                // 이름 텍스트 높이 및 폰트 크기 완벽 통일
                 const name = document.createElement('p');
                 name.className = "text-[10px] font-bold text-slate-700 w-full text-center gothic-text leading-tight select-none mt-1.5 h-8 overflow-hidden break-keep";
                 name.innerText = item.name;
@@ -907,7 +890,6 @@
                 div.appendChild(name); 
                 list.appendChild(div);
 
-                // 드래그 앤 드롭 바인딩
                 if (!isEditMode) {
                     let ghost = null; let startX = 0, startY = 0; let hasMoved = false;
                     const onDragStart = (e) => {
@@ -941,6 +923,27 @@
             });
         }
 
+        // 💡 핸드폰 원본 사진 용량 폭발로 로컬스토리지가 에러나며 버튼이 멈추던 현상을 막기 위한 리사이징 압축 로직
+        function compressImage(dataUrl, isPng, callback) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_SIZE = 300; 
+                let width = img.width; let height = img.height;
+                if (width > height) {
+                    if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+                } else {
+                    if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+                }
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                // 용량을 극단적으로 낮춰 안전하게 저장 (png는 투명도 유지)
+                callback(canvas.toDataURL(isPng ? 'image/png' : 'image/jpeg', 0.8));
+            };
+            img.src = dataUrl;
+        }
+
         async function handleCustomUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -966,8 +969,10 @@
                         const blob = await response.blob();
                         const reader = new FileReader();
                         reader.onloadend = () => {
-                            tempCustomItem = { name: "내 짐", weight: 0.5, emoji: '✨', image: reader.result, isCustomImage: true };
-                            finishUpload();
+                            compressImage(reader.result, true, (compressedUrl) => {
+                                tempCustomItem = { name: "내 짐", weight: 0.5, emoji: '✨', image: compressedUrl, isCustomImage: true };
+                                finishUpload();
+                            });
                         };
                         reader.readAsDataURL(blob);
                         return;
@@ -977,10 +982,13 @@
 
             const reader = new FileReader();
             reader.onload = function(event) {
-                setTimeout(() => {
-                    tempCustomItem = { name: "내 짐", weight: 0.5, emoji: '✨', image: event.target.result, isCustomImage: true };
-                    finishUpload();
-                }, 1200);
+                // 원본 사진 업로드 시에도 안전하게 리사이징 압축
+                compressImage(event.target.result, false, (compressedUrl) => {
+                    setTimeout(() => {
+                        tempCustomItem = { name: "내 짐", weight: 0.5, emoji: '✨', image: compressedUrl, isCustomImage: true };
+                        finishUpload();
+                    }, 800);
+                });
             };
             reader.readAsDataURL(file);
 
@@ -1023,8 +1031,9 @@
 
         function addStickerToCanvas(item, xPercent, yPercent, isRecovery = false) {
             document.getElementById('empty-msg').style.display = 'none';
-            const id = isRecovery ? item.id : Date.now() + '-' + Math.floor(Math.random() * 1000);
-            const rotation = isRecovery ? item.rotation : (Math.random() * 24 - 12);
+            // 기존 아이템 복원 시에는 기존 저장되었던 회전값과 ID를 그대로 살립니다.
+            const id = isRecovery && item.id ? item.id : Date.now() + '-' + Math.floor(Math.random() * 1000);
+            const rotation = isRecovery && item.rotation !== undefined ? item.rotation : (Math.random() * 24 - 12);
             
             const sticker = document.createElement('div');
             sticker.id = `sticker-${id}`; sticker.className = "draggable-sticker animate-pop w-14 h-14";
@@ -1081,7 +1090,6 @@
             const bagWrap = document.getElementById('interactive-backpack-wrap'); const bagSvg = document.getElementById('interactive-backpack'); const bagFace = document.getElementById('bag-face'); const bagSweat = document.getElementById('bag-sweat');
             
             if (currentItems.length === 0) {
-                // 디폴트 상태 문구와 이모지를 🪶(깃털)로 완전 일치 리셋
                 document.getElementById('status-emoji').innerText = '🪶'; document.getElementById('status-label').innerText = '깃털 가벼움';
                 document.documentElement.style.setProperty('--bag-scale', '1.0');
                 if (bagWrap) bagWrap.style.transform = 'scale(1.0)';
@@ -1126,10 +1134,15 @@
 
             diaryDatabase[selectedDateKey] = { items: [...currentItems], status };
 
-            if (window.FBDiary) {
-                await window.FBDiary.saveUser(currentUsername, currentPin, diaryDatabase);
-            } else {
-                localStorage.setItem(`bag_fairy_diary_user_${currentUsername}`, JSON.stringify(diaryDatabase));
+            // 💡 네트워크 통신, 로컬스토리지 용량 한도 초과 등의 오류 발생 시에도 진단화면이 멈추지 않도록 안전망을 추가
+            try {
+                if (window.FBDiary) {
+                    await window.FBDiary.saveUser(currentUsername, currentPin, diaryDatabase);
+                } else {
+                    localStorage.setItem(`bag_fairy_diary_user_${currentUsername}`, JSON.stringify(diaryDatabase));
+                }
+            } catch (err) {
+                console.warn("데이터베이스/스토리지 저장 실패:", err);
             }
 
             document.getElementById('res-emoji').innerText = status.emoji; document.getElementById('res-label').innerText = status.label; document.getElementById('res-comment').innerText = `"${getRandomComment(level)}"`; document.getElementById('card-date').innerText = selectedDateKey.replace(/-/g, '.');
@@ -1140,14 +1153,23 @@
             if (window.gtag) gtag('event', 'complete_diagnosis', { total_weight: total, strain_level: status.label });
         }
 
+        // 💡 결과화면에서 [뒤로가기] 버튼을 눌렀을 때, CSS 잔재 없이 부드럽게 닫아 기존 가방 화면으로 돌아가는 로직 추가
+        function closeResultModal() { 
+            const modal = document.getElementById('result-modal'); 
+            modal.querySelector('div').style.opacity = '0'; 
+            modal.querySelector('div').style.transform = 'scale(0.9)'; 
+            setTimeout(() => { modal.classList.remove('flex'); modal.classList.add('hidden'); }, 300); 
+        }
+
         function openDayDetailModal(dateKey) {
             selectedDateKey = dateKey; const data = diaryDatabase[dateKey];
             
-            // 💡 디테일 모달에서 짐 개수를 안전하고 올바르게 세어서 출력하도록 바인딩
             document.getElementById('detail-date').innerText = dateKey.replace(/-/g, '.'); 
             document.getElementById('detail-emoji').innerText = data.status.emoji; 
             document.getElementById('detail-emoji').style.backgroundColor = data.status.color; 
             document.getElementById('detail-label').innerText = data.status.label;
+            
+            // 💡 디테일 모달에서 짐 개수를 정확하게 카운트하여 표기되도록 수정
             document.getElementById('detail-total-items').innerText = `총 ${data.items.length}개의 짐이 있어요`;
             
             const list = document.getElementById('detail-item-list'); list.innerHTML = '';
@@ -1162,8 +1184,16 @@
         }
 
         function closeDayDetailModal() { const modal = document.getElementById('day-detail-modal'); modal.style.opacity = '0'; setTimeout(() => { modal.classList.remove('flex'); modal.classList.add('hidden'); }, 300); }
-        function editFromDetail() { closeDayDetailModal(); setTimeout(() => openEditorForDate(selectedDateKey), 300); }
-        function closeModalAndCalendar() { document.getElementById('result-modal').classList.add('hidden'); goToCalendar(); }
+        
+        // 💡 캘린더에서 '이 날 가방 수정하기' 진입 시에만 기존 상태를 복원(false)하도록 제어
+        function editFromDetail() { closeDayDetailModal(); setTimeout(() => openEditorForDate(selectedDateKey, false), 300); }
+        
+        function closeModalAndCalendar() { 
+            const modal = document.getElementById('result-modal');
+            modal.querySelector('div').style.opacity = '0';
+            modal.querySelector('div').style.transform = 'scale(0.9)';
+            setTimeout(() => { modal.classList.remove('flex'); modal.classList.add('hidden'); goToCalendar(); }, 300);
+        }
     </script>
 </body>
 </html>
